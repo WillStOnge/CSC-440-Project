@@ -13,7 +13,7 @@ You can access the wiki [http://wiki440.ms2ms.com](http://wiki440.ms2ms.com).
 
 ## Additional Features
 
-1. Moved the user file to a sqllite database.
+1. Moved the user file to a sqllite database using pyodbc for database agnosticism.
 2. Added roles so user's access (editing, deleting, etc.) can be limited.
 3. Added tags so pages can be categorized.
 4. Allow users to upload files to the server.
