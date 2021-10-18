@@ -1,5 +1,5 @@
 """
-    User classes & helpers
+    Role classes & helpers
     ~~~~~~~~~~~~~~~~~~~~~~
 """
 
@@ -11,9 +11,6 @@ class RoleManager:
         pass
 
     def read_role(self, role_name: str) -> Role:
-        pass
-
-    def update_role(self, role: Role) -> bool:
         pass
 
     def delete_role(self, role: Role) -> bool:
