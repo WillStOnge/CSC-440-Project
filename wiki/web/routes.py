@@ -169,6 +169,30 @@ def user_admin(user_id):
 def user_delete(user_id):
     pass
 
+@bp.route('/roles/')
+def role_list():
+    pass
+
+@bp.route('/roles/<int:user_id>/')
+def role_list_assigned(user_id):
+    pass
+
+@bp.route('/role/create/')
+def role_create():
+    pass
+
+@bp.route('/role/delete/<str:role_name>/')
+def role_delete(role_name):
+    pass
+
+@bp.route('/role/assign/<int:user_id>/<str:role_name>/')
+def role_assign(user_id, role_name):
+    pass
+
+@bp.route('/role/unassign/<int:user_id>/<str:role_name>/')
+def role_unassign(user_id, role_name):
+    pass
+
 
 """
     Error Handlers
