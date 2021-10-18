@@ -8,6 +8,7 @@ from werkzeug.local import LocalProxy
 
 from wiki.core import Wiki
 from wiki.web.user import UserManager
+from wiki.web.database import Database
 
 class WikiError(Exception):
     pass
@@ -23,7 +24,8 @@ current_wiki = LocalProxy(get_wiki)
 def get_users():
     users = getattr(g, '_users', None)
     if users is None:
-        users = g._users = UserManager(current_app.config['USER_DIR'])
+        database = Database()
+        users = g._users = UserManager(database.getConnection())
     return users
 
 current_users = LocalProxy(get_users)
