@@ -185,17 +185,17 @@ def role_create():
     pass
 
 
-@bp.route('/role/delete/<str:role_name>/')
+@bp.route('/role/delete/<string:role_name>/')
 def role_delete(role_name):
     pass
 
 
-@bp.route('/role/assign/<int:user_id>/<str:role_name>/')
+@bp.route('/role/assign/<int:user_id>/<string:role_name>/')
 def role_assign(user_id, role_name):
     pass
 
 
-@bp.route('/role/unassign/<int:user_id>/<str:role_name>/')
+@bp.route('/role/unassign/<int:user_id>/<string:role_name>/')
 def role_unassign(user_id, role_name):
     pass
 

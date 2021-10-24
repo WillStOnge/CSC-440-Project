@@ -8,8 +8,8 @@ class UserManager(object):
     """
     A very simple user Manager, that saves it's data to a database.
     """
-    def __init__(self, conn):
-        self.conn = conn
+    def __init__(self, cursor):
+        self.cursor = cursor
 
 
     def add_user(self, user):

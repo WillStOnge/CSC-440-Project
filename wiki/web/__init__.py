@@ -7,7 +7,8 @@ from flask_login import LoginManager
 from werkzeug.local import LocalProxy
 
 from wiki.core import Wiki
-from wiki.web.user import UserManager
+from wiki.web.user import UserManager, User
+from wiki.web.role import Role, RoleManager
 from wiki.web.database import Database
 
 class WikiError(Exception):
@@ -25,7 +26,7 @@ def get_users():
     users = getattr(g, '_users', None)
     if users is None:
         database = Database()
-        users = g._users = UserManager(database.getConnection())
+        users = g._users = UserManager(database.getCursor())
     return users
 
 current_users = LocalProxy(get_users)
