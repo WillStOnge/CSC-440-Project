@@ -1,7 +1,3 @@
-"""
-    User classes & helpers
-    ~~~~~~~~~~~~~~~~~~~~~~
-"""
 import os, binascii, hashlib
 from functools import wraps
 from flask import current_app
@@ -42,7 +38,7 @@ class User:
         return check_hashed_password(password, self.get('hash'))
 
 
-    def get_manager():
+    def get_manager() -> UserManager:
         return UserManager(Database())
 
 

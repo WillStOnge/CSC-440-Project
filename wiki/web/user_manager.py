@@ -16,7 +16,7 @@ class UserManager:
         :param password: Raw password of the user to be created.
         :param is_active: Flag whether the user is active or not.
 
-        :returns: The newly created user or None if the user could not be created.
+        :returns: The newly created user or None if the user could not be created.As a reminder, HW3 is due 
         """
         # Check if user already exists.
         select_query = "SELECT user_id FROM user WHERE user_name = {};".format(user_name)
@@ -29,24 +29,24 @@ class UserManager:
             return None
 
         # Return instance of new user.
-        select_query = "SELECT user_id FROM user WHERE user_name = {};".format(user_name)
-        result = self._database.execute_query_for_result(select_query)
-
-        print(result)
-
-        if len(result) > 0:
-            return User(1, user_name, password, is_active)
-        else:
-            return None
+        return self.get_user(user_name)
 
 
-    def get_user(self, user_id: int) -> User:
+    def get_user(self, user_name: int) -> User:
         """
         Reads user's data from the database an returns it.
         
-        :param user_id: Id of the user to be retrieved from the database.
+        :param user_name: Username of the user to be retrieved from the database.
+
+        :returns: An instance of the User from the database. Returns None if the user is not found.
         """
-        pass
+        query = "SELECT user_id, user_name, password, is_active FROM user WHERE user_name = {};".format(user_name)
+        result = self._database.execute_query_for_result(query)
+
+        if len(result) > 0:
+            return User(result[0]["user_id"], user_name, result[0]["password"], result[0]["is_active"])
+        else:
+            return None
 
 
     def delete_user(self, user: User) -> bool:
@@ -57,17 +57,18 @@ class UserManager:
 
         :returns: True if the deletion was successful and false otherwise.
         """
-        try:
-            self._database.execute_query("DELETE user WHERE user_id = ?", user.user_id)
-            return True
-        except:
-            return False
+        return self._database.execute_query("DELETE user WHERE user_id = {}".format(user.user_id))
+        
 
-
-    def update(self, user: User):
+    def update(self, user: User) -> bool:
         """
         Updates a user into the database.
 
         :param user: Instance of the User which should be updated.
+
+        :returns: True if the update was successful and false otherwise.
         """
-        pass
+        query = "UPDATE user \
+                SET user_name = {}, password = {}, is_active = {} \
+                WHERE user_id = {}".format(user.user_name, user.password, user.is_active, user.user_id)
+        return self._database.execute_query(query)

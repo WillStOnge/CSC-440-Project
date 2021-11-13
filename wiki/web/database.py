@@ -1,7 +1,3 @@
-"""
-    Database Manager
-    ~~~~~~~~~~~~~~~~~~~~~~
-"""
 from flask import current_app
 import pyodbc
 

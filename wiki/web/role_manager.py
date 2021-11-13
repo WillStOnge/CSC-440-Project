@@ -1,6 +1,9 @@
 from wiki.web.role import Role
 
 class RoleManager:
+    """
+    Class used to manage roles in the database.
+    """
     def __init__(self, database):
         self._database = database
 
