@@ -21,8 +21,8 @@ You can access the wiki [http://wiki440.ms2ms.com](http://wiki440.ms2ms.com).
 
 ## Authors
 1. Alexander Jung-Loddenkemper (original author)
-2. [Will Sie](https://github.com/Willsie) (team leader)
+2. [Will Sie](https://github.com/Willsie)
 3. [Will St. Onge](https://github.com/WillStOnge)
 4. [Cory Knoll](https://github.com/kryptonianCodeMonkey/)
 5. [Justin Gallagher](https://github.com/ThisJustin-code)
-6. [Anthony Bosch](https://github.com/boscha1)
+6. [Anthony Bosch](https://github.com/boscha1) (team leader)
