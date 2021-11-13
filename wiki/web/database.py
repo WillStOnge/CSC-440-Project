@@ -10,7 +10,7 @@ class Database:
         self._conn = pyodbc.connect(current_app.config['CONNECTION_STRING'])
 
 
-    def execute_query_for_result(self, query) -> dict:
+    def execute_query_for_result(self, query) -> list:
         """
         Executes a query where a result is expected (SELECT statements).
 

@@ -10,7 +10,7 @@ from wiki.core import Wiki
 from wiki.web.user import User
 from wiki.web.role import Role
 from wiki.web.user_manager import UserManager
-from wiki.web.role_manager import RoleManager
+from wiki.web.role_manager import RoleManager, RoleAssignmentManager
 from wiki.web.database import Database
 
 class WikiError(Exception):
