@@ -7,11 +7,11 @@ from flask_login import LoginManager
 from werkzeug.local import LocalProxy
 
 from wiki.core import Wiki
-from wiki.web.user import User
-from wiki.web.role import Role
-from wiki.web.user_manager import UserManager
-from wiki.web.role_manager import RoleManager, RoleAssignmentManager
-from wiki.web.database import Database
+from wiki.web.model.user import User
+from wiki.web.model.role import Role
+from wiki.web.controller.user_manager import UserManager
+from wiki.web.controller.role_manager import RoleManager, RoleAssignmentManager
+from wiki.web.util.database import Database
 
 class WikiError(Exception):
     pass
