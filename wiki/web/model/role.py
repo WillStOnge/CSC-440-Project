@@ -1,6 +1,6 @@
 from wiki.web.user import User
-from wiki.web.role_manager import RoleManager
-from wiki.web.database import Database
+from wiki.web.controller.role_manager import RoleManager
+from wiki.web.util.database import Database
 
 class Role:
     def __init__(self, role_id: int, role_name: str):

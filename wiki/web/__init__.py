@@ -12,6 +12,7 @@ from wiki.web.model.role import Role
 from wiki.web.controller.user_manager import UserManager
 from wiki.web.controller.role_manager import RoleManager, RoleAssignmentManager
 from wiki.web.util.database import Database
+from wiki.web.util.password import *
 
 class WikiError(Exception):
     pass
