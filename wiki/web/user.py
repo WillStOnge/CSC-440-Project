@@ -1,72 +1,25 @@
+"""
+    User classes & helpers
+    ~~~~~~~~~~~~~~~~~~~~~~
+"""
 import os, binascii, hashlib
 from functools import wraps
 from flask import current_app
 from flask_login import current_user
+from wiki.web.user_manager import UserManager
+from wiki.web.database import Database
 
 
-class UserManager(object):
-    """
-    A very simple user Manager, that saves it's data to a database.
-    """
-    def __init__(self, cursor):
-        self.cursor = cursor
-
-
-    def add_user(self, user):
-        """
-        Inserts a new user into the database.
-        """
-        # Check if user already exists.
-        # Insert the user.
-        # Return instance of new user.
-        pass
-
-
-    def get_user(self, name):
-        """
-        Reads user's data from the database an returns it.
-        """
-        pass
-
-
-    def delete_user(self, name):
-        """
-        Deletes a user into the database.
-        """
-        users = self.read()
-        if not users.pop(name, False):
-            return False
-        self.write(users)
-        return True
-
-
-    def update(self, name, userdata):
-        """
-        Updates a user into the database.
-        """
-        data = self.read()
-        data[name] = userdata
-        self.write(data)
-
-
-class User(object):
-    def __init__(self, manager, name, data):
-        self.manager = manager
-        self.name = name
-        self.data = data
-
-
-    def get(self, option):
-        return self.data.get(option)
-
-
-    def set(self, option, value):
-        self.data[option] = value
-        self.save()
+class User:
+    def __init__(self, user_id, user_name, password, is_active):
+        self._user_id = user_id
+        self._user_name = user_name
+        self._password = password
+        self._is_active = is_active
 
 
     def save(self):
-        self.manager.update(self.name, self.data)
+        self.get_manager().update(self.name, self.data)
 
 
     def is_authenticated(self):
@@ -87,6 +40,50 @@ class User(object):
 
     def check_password(self, password):
         return check_hashed_password(password, self.get('hash'))
+
+
+    def get_manager():
+        return UserManager(Database())
+
+
+    @property
+    def user_id(self):
+        return self._user_id
+
+        
+    @property
+    def user_name(self):
+        return self._user_name
+
+        
+    @property
+    def password(self):
+        return self._password
+
+        
+    @property
+    def is_active(self):
+        return self._is_active
+
+
+    @user_id.setter
+    def user_id(self, user_id):
+        self._user_id = user_id
+
+
+    @user_name.setter
+    def user_name(self, user_name):
+        self._user_name = user_name
+
+
+    @password.setter
+    def password(self, password):
+        self._password = password
+
+
+    @is_active.setter
+    def is_active(self, is_active):
+        self._is_active = is_active
 
 
 def make_salted_hash(password, salt=None):
