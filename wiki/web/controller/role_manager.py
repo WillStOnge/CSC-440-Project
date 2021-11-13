@@ -1,6 +1,3 @@
-from wiki.web.role import Role
-from wiki.web.user import User
-
 class RoleManager:
     """
     Class used to manage roles in the database.

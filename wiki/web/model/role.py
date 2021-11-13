@@ -1,4 +1,3 @@
-from wiki.web.user import User
 from wiki.web.controller.role_manager import RoleManager
 from wiki.web.util.database import Database
 

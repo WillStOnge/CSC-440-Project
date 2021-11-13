@@ -1,4 +1,4 @@
-from wiki.web.role import User
+from wiki.web.model.role import User
 
 class UserManager:
     """
