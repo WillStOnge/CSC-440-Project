@@ -1,4 +1,4 @@
-from wiki.web.model.role import User
+from wiki import User
 
 class UserManager:
     """
@@ -45,6 +45,21 @@ class UserManager:
 
         if len(result) > 0:
             return User(result[0]["user_id"], user_name, result[0]["password"], result[0]["is_active"])
+        else:
+            return None
+
+
+    def read_all(self) -> list:
+        """
+        Reads all user's data from the database an returns it.
+
+        :returns: An instance of all of the users from the database. Returns None if no roles exist.
+        """
+        query = "SELECT user_id, user_name, password, is_active FROM user;"
+        result = self._database.execute_query_for_result(query)
+
+        if len(result) > 0:
+            return [User(user["user_id"], user["user_name"], user["password"], user["is_active"]) for user in result]
         else:
             return None
 
