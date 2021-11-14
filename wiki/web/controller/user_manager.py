@@ -1,4 +1,5 @@
-from wiki import User
+from wiki.web.model import User
+from wiki.web.util import Database
 
 class UserManager:
     """

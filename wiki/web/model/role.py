@@ -1,14 +1,7 @@
-from wiki.web.controller.role_manager import RoleManager
-from wiki.web.util.database import Database
-
 class Role:
     def __init__(self, role_id: int, role_name: str):
         self._role_id = role_id
         self._role_name = role_name
-
-
-    def get_manager() -> RoleManager:
-        return RoleManager(Database())
 
 
     @property

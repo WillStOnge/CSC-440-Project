@@ -1,8 +1,11 @@
+from wiki.web.model import Role, User
+from wiki.web.util import Database
+
 class RoleManager:
     """
     Class used to manage roles in the database.
     """
-    def __init__(self, database):
+    def __init__(self, database: Database):
         self._database = database
 
 
@@ -49,7 +52,7 @@ class RoleManager:
         """
         Reads all role's data from the database an returns it.
 
-        :returns: An instance of all of the Role from the database. Returns None if no roles exist.
+        :returns: An instance of all of the roles from the database. Returns None if no roles exist.
         """
         query = "SELECT role_id, role_name FROM role;"
         result = self._database.execute_query_for_result(query)

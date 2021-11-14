@@ -1,6 +1,3 @@
-from wiki.web.controller.user_manager import UserManager
-from wiki.web.util.database import Database
-
 class User:
     def __init__(self, user_id, user_name, password, is_active):
         self._user_id = user_id
@@ -31,10 +28,6 @@ class User:
 
     def check_password(self, password):
         return check_hashed_password(password, self.get('hash'))
-
-
-    def get_manager() -> UserManager:
-        return UserManager(Database())
 
 
     @property

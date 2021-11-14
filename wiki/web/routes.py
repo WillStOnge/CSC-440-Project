@@ -20,7 +20,7 @@ from wiki.web.forms import SearchForm
 from wiki.web.forms import URLForm
 from wiki.web import current_wiki
 from wiki.web import current_users
-from wiki.web.util.password import protect
+from wiki.web.util import protect
 
 
 bp = Blueprint('wiki', __name__)
