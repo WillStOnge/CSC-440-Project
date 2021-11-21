@@ -20,6 +20,7 @@
 			{% endfor %}
 		</tbody>
 	</table>
+    <p><a href="{{ url_for('wiki.user_create', url='home') }}" class="btn btn-success">Create a User</a></p>
 {% else %}
 	<p>There are no users.</p>
 {% endif %}
