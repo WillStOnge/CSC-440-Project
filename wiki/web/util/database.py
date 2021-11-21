@@ -2,7 +2,6 @@ from flask import current_app
 from .singleton import Singleton
 import pyodbc
 
-
 class Database(Singleton):
     def __init__(self):
         """
@@ -23,7 +22,12 @@ class Database(Singleton):
             cursor = self._conn.execute(query)
 
             columns = [column[0] for column in cursor.description]
-            return [dict(zip(columns, row)) for row in cursor.fetchall()]
+            records = [dict(zip(columns, row)) for row in cursor.fetchall()]
+
+            if len(records) > 0:
+                return records
+            else:
+                return None
         except:
             return None
 
