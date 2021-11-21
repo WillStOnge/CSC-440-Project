@@ -55,3 +55,8 @@ class LoginForm(Form):
             raise ValidationError('This username does not exist.')
         if not user.check_password(field.data):
             raise ValidationError('Username and password do not match.')
+
+
+class UserForm(Form):
+    name = TextField('', [InputRequired()])
+    password = PasswordField('', [InputRequired()])
