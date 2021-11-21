@@ -135,7 +135,7 @@ def user_login():
     if form.validate_on_submit():
         user = current_users.read(form.name.data)
         login_user(user)
-        user.set('authenticated', True)
+        user.set_authenticated(True)
         flash('Login successful.', 'success')
         return redirect(request.args.get("next") or url_for('wiki.index'))
     return render_template('login.html', form=form)

@@ -57,7 +57,7 @@ class RoleManager:
         query = "SELECT role_id, role_name FROM role;"
         result = self._database.execute_query_for_result(query)
 
-        if result != None > 0:
+        if result != None:
             return [Role(role["role_id"], role["role_name"]) for role in result]
         else:
             return None
@@ -149,7 +149,7 @@ class RoleAssignmentManager:
                 ON role_assignment.role_id = role.role_id WHERE user_id = {};".format(user.user_id)
         result = self._database.execute_query_for_result(query)
 
-        if result != None > 0:
+        if result != None:
             return [Role(role["role_id"], role["role_name"]) for role in result]
         else:
             return None

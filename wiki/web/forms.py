@@ -46,12 +46,12 @@ class LoginForm(Form):
 
     def validate_name(form, field):
         user = current_users.read(field.data)
-        if not user:
+        if user == None:
             raise ValidationError('This username does not exist.')
 
     def validate_password(form, field):
         user = current_users.read(form.name.data)
-        if not user:
-            return
+        if user == None:
+            raise ValidationError('This username does not exist.')
         if not user.check_password(field.data):
             raise ValidationError('Username and password do not match.')

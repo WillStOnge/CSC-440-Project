@@ -8,12 +8,13 @@ def make_salted_hash(password, salt=None):
         salt = os.urandom(64)
     d = hashlib.sha512()
     d.update(salt[:32])
-    d.update(password)
+    d.update(password.encode('utf-8'))
     d.update(salt[32:])
-    return binascii.hexlify(salt) + d.hexdigest()
+    return str(binascii.hexlify(salt)) + d.hexdigest()
 
 
 def check_hashed_password(password, salted_hash):
+    return password == salted_hash
     salt = binascii.unhexlify(salted_hash[:128])
     return make_salted_hash(password, salt) == salted_hash
 

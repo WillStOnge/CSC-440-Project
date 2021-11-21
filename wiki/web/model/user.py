@@ -1,9 +1,12 @@
+from wiki.web.util import check_hashed_password, make_salted_hash
+
 class User:
     def __init__(self, user_id, user_name, password, is_active):
         self._user_id = user_id
         self._user_name = user_name
         self._password = password
         self._is_active = is_active
+        self._is_authenticated = False
 
 
     def save(self):
@@ -11,7 +14,11 @@ class User:
 
 
     def is_authenticated(self):
-        return self.data.get('authenticated')
+        return self._is_authenticated
+
+
+    def set_authenticated(self, is_authenticated):
+        self._is_authenticated = is_authenticated
 
 
     def is_active(self):
@@ -23,12 +30,11 @@ class User:
 
 
     def get_id(self):
-        return self.name
+        return self._user_name
 
 
     def check_password(self, password):
-        return check_hashed_password(password, self.get('hash'))
-
+        return check_hashed_password(password, self.password)
 
     @property
     def user_id(self):
