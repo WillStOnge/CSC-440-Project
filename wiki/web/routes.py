@@ -2,7 +2,7 @@
     Routes
     ~~~~~~
 """
-from flask import Blueprint
+from flask import Blueprint, current_app
 from flask import flash
 from flask import redirect
 from flask import render_template
@@ -18,10 +18,9 @@ from wiki.web.forms import EditorForm
 from wiki.web.forms import LoginForm
 from wiki.web.forms import SearchForm
 from wiki.web.forms import URLForm
-from wiki.web import current_wiki
+from wiki.web import current_wiki, UserManager, Database, get_users
 from wiki.web import current_users
 from wiki.web.util import protect
-
 
 bp = Blueprint('wiki', __name__)
 
@@ -152,7 +151,7 @@ def user_logout():
 
 @bp.route('/user/')
 def user_index():
-    pass
+    return render_template('users.html', users=current_users.read_all())
 
 
 @bp.route('/user/create/')
