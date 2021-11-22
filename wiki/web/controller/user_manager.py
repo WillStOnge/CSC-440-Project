@@ -21,11 +21,13 @@ class UserManager:
         """
         # Check if user already exists.
         select_query = "SELECT user_id FROM user WHERE user_name = {};".format(user_name)
-        if len(self._database.execute_query_for_result(select_query)) > 0:
+        print(select_query)
+        if self._database.execute_query_for_result(select_query) is not None:
             return None
 
         # Insert the user.
         insert_query = "INSERT INTO user (user_name, password, is_active) VALUES ({}, {}, {});".format(user_name, password, is_active)
+        print(insert_query)
         if not self._database.execute_query(insert_query):
             return None
 
@@ -33,7 +35,7 @@ class UserManager:
         return self.read(user_name)
 
 
-    def read(self, user_name: int) -> User:
+    def read(self, user_name: str) -> User:
         """
         Reads user's data from the database an returns it.
         
