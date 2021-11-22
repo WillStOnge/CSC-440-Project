@@ -31,13 +31,13 @@ class UserManager:
             return None
 
         # Return instance of new user.
-        return self.read(user_name)
+        return self.read_name(user_name)
 
 
-    def read(self, user_name: str) -> User:
+    def read_name(self, user_name: str) -> User:
         """
         Reads user's data from the database an returns it.
-        
+
         :param user_name: Username of the user to be retrieved from the database.
 
         :returns: An instance of the User from the database. Returns None if the user is not found.
@@ -47,6 +47,15 @@ class UserManager:
 
         if result != None:
             return User(result[0]["user_id"], user_name, str(result[0]["password"]), result[0]["is_active"])
+        else:
+            return None
+
+    def read_id(self, user_id: int) -> User:
+        query = "SELECT user_id, user_name, password, is_active FROM user WHERE user_id = '{}';".format(user_id)
+        result = self._database.execute_query_for_result(query)
+
+        if result != None:
+            return User(user_id, result[0]["user_id"], str(result[0]["password"]), result[0]["is_active"])
         else:
             return None
 
@@ -88,4 +97,5 @@ class UserManager:
 
         :returns: True if the deletion was successful and false otherwise.
         """
-        return self._database.execute_query("DELETE user WHERE user_id = {}".format(user.user_id))
+        delete_query = "DELETE FROM user WHERE user_id = '{}';".format(user.user_id)
+        return self._database.execute_query(delete_query)
