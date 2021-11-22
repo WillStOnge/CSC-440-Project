@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block title %}{{ user.user_name }}{% endblock title %}
+
+{% block content %}
+{% if user %}
+	<table class="table">
+		<thead>
+			<tr>
+				<th>ID</th>
+				<th>Name</th>
+			</tr>
+		</thead>
+		<tbody>
+            <tr>
+                <td>{{ user.user_id }}</td>
+                <td>{{ user.user_name }}</td>
+            </tr>
+		</tbody>
+	</table>
+   {% else %}
+	<p>User does not exist.</p>
+{% endif %}
+{% endblock content %}

@@ -41,7 +41,7 @@ class Database(Singleton):
         :return: True if the query completed without errors, false otherwise.
         """
         try:
-            self._conn.execute(query)
+            self._conn.execute(query).commit()
             return True
         except:
             return False

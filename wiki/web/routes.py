@@ -2,7 +2,7 @@
     Routes
     ~~~~~~
 """
-from flask import Blueprint
+from flask import Blueprint, current_app
 from flask import flash
 from flask import redirect
 from flask import render_template
@@ -14,14 +14,13 @@ from flask_login import login_user
 from flask_login import logout_user
 
 from wiki.core import Processor
-from wiki.web.forms import EditorForm
+from wiki.web.forms import EditorForm, UserForm
 from wiki.web.forms import LoginForm
 from wiki.web.forms import SearchForm
 from wiki.web.forms import URLForm
 from wiki.web import current_wiki
 from wiki.web import current_users
 from wiki.web.util import protect
-
 
 bp = Blueprint('wiki', __name__)
 
@@ -54,8 +53,7 @@ def display(url):
 def create():
     form = URLForm()
     if form.validate_on_submit():
-        return redirect(url_for(
-            'wiki.edit', url=form.clean_url(form.url.data)))
+        return redirect(url_for('wiki.edit', url=form.clean_url(form.url.data)))
     return render_template('create.html', form=form)
 
 
@@ -133,7 +131,7 @@ def search():
 def user_login():
     form = LoginForm()
     if form.validate_on_submit():
-        user = current_users.read(form.name.data)
+        user = current_users.read_name(form.name.data)
         login_user(user)
         user.set_authenticated(True)
         flash('Login successful.', 'success')
@@ -144,30 +142,49 @@ def user_login():
 @bp.route('/user/logout/')
 @login_required
 def user_logout():
-    current_user.set('authenticated', False)
+    current_user.set_authenticated(False)
     logout_user()
     flash('Logout successful.', 'success')
     return redirect(url_for('wiki.index'))
 
 
 @bp.route('/user/')
+@protect
 def user_index():
-    pass
+    users = current_users.read_all()
+    return render_template('users.html', users=users)
 
 
-@bp.route('/user/create/')
+@bp.route('/user/create/', methods=['POST', 'GET'])
+@protect
 def user_create():
-    pass
+    form = UserForm()
+    if form.validate_on_submit():
+        new_user = current_users.create(form.name.data, form.password.data, 1)
+        if new_user is None:
+            return redirect("/user/{}/".format(form.name.data))
+        else:
+            return redirect("/user/{}/".format(new_user.user_name))
+    return render_template('create_user.html', form=form)
 
 
-@bp.route('/user/<int:user_id>/')
-def user_admin(user_id):
-    pass
+@bp.route('/user/<string:user_name>/')
+@protect
+def user_admin(user_name):
+    user = current_users.read_name(user_name)
+    return render_template('user.html', user=user)
 
 
 @bp.route('/user/delete/<int:user_id>/')
+@protect
 def user_delete(user_id):
-    pass
+    deleted_user = current_users.read_id(user_id)
+    deleted = current_users.delete(deleted_user)
+
+    if deleted is not None:
+        return redirect(url_for('wiki.user_index'))
+    return 'Could not delete user'
+
 
 
 @bp.route('/roles/')
@@ -209,4 +226,3 @@ def role_unassign(user_id, role_name):
 @bp.errorhandler(404)
 def page_not_found(error):
     return render_template('404.html'), 404
-
