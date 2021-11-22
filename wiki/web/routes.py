@@ -160,20 +160,17 @@ def user_create():
     form = UserForm()
     if form.validate_on_submit():
         new_user = current_users.create(form.name.data, form.password.data, 1)
-
-        print(new_user.user_id)
-
         if new_user is None:
-            redirect("user/{}/".format(form.name.data))
+            return redirect("/user/{}/".format(form.name.data))
         else:
-            redirect("user/{}/".format(new_user.user_name))
+            return redirect("/user/{}/".format(new_user.user_name))
     return render_template('create_user.html', form=form)
 
 
 @bp.route('/user/<string:user_name>/')
 def user_admin(user_name):
     user = current_users.read(user_name)
-    return render_template('user', user=user)
+    return render_template('user.html', user=user)
 
 
 @bp.route('/user/delete/<int:user_id>/')
