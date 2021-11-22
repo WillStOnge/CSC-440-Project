@@ -16,6 +16,8 @@
 				<tr>
 					<td>{{ user.user_id }}</td>
 					<td>{{ user.user_name }}</td>
+					<td><p><a href="{{ url_for('wiki.user_admin', user_name=user.user_name) }}" class="btn btn-primary">View</a></p></td>
+					<td><p><a href="{{ url_for('wiki.user_delete', user_id=user.user_id) }}" class="btn btn-danger">Delete</a></p></td>
 				</tr>
 			{% endfor %}
 		</tbody>
