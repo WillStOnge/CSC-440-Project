@@ -131,7 +131,7 @@ def search():
 def user_login():
     form = LoginForm()
     if form.validate_on_submit():
-        user = current_users.read(form.name.data)
+        user = current_users.read_name(form.name.data)
         login_user(user)
         user.set_authenticated(True)
         flash('Login successful.', 'success')
