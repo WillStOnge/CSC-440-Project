@@ -155,11 +155,18 @@ def user_index():
 
 
 @bp.route('/user/create/', methods=['POST', 'GET'])
+@protect
 def user_create():
     form = UserForm()
     if form.validate_on_submit():
-        user_name = current_users.create(form.name.data, form.password.data, True)
-        return render_template('user.html', user_name=user_name)
+        new_user = current_users.create(form.name.data, form.password.data, 1)
+
+        print(new_user.user_id)
+
+        if new_user is None:
+            redirect("user/{}/".format(form.name.data))
+        else:
+            redirect("user/{}/".format(new_user.user_name))
     return render_template('create_user.html', form=form)
 
 
