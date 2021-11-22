@@ -14,11 +14,11 @@ from flask_login import login_user
 from flask_login import logout_user
 
 from wiki.core import Processor
-from wiki.web.forms import EditorForm
+from wiki.web.forms import EditorForm, UserForm
 from wiki.web.forms import LoginForm
 from wiki.web.forms import SearchForm
 from wiki.web.forms import URLForm
-from wiki.web import current_wiki, UserManager, Database, get_users
+from wiki.web import current_wiki
 from wiki.web import current_users
 from wiki.web.util import protect
 
@@ -53,8 +53,7 @@ def display(url):
 def create():
     form = URLForm()
     if form.validate_on_submit():
-        return redirect(url_for(
-            'wiki.edit', url=form.clean_url(form.url.data)))
+        return redirect(url_for('wiki.edit', url=form.clean_url(form.url.data)))
     return render_template('create.html', form=form)
 
 
@@ -151,17 +150,23 @@ def user_logout():
 
 @bp.route('/user/')
 def user_index():
-    return render_template('users.html', users=current_users.read_all())
+    users = current_users.read_all()
+    return render_template('users.html', users=users)
 
 
-@bp.route('/user/create/')
+@bp.route('/user/create/', methods=['POST', 'GET'])
 def user_create():
-    pass
+    form = UserForm()
+    if form.validate_on_submit():
+        user_name = current_users.create(form.name.data, form.password.data, True)
+        return render_template('user.html', user_name=user_name)
+    return render_template('create_user.html', form=form)
 
 
-@bp.route('/user/<int:user_id>/')
-def user_admin(user_id):
-    pass
+@bp.route('/user/<string:user_name>/')
+def user_admin(user_name):
+    user = current_users.read(user_name)
+    return render_template('user', user=user)
 
 
 @bp.route('/user/delete/<int:user_id>/')
@@ -208,4 +213,3 @@ def role_unassign(user_id, role_name):
 @bp.errorhandler(404)
 def page_not_found(error):
     return render_template('404.html'), 404
-
