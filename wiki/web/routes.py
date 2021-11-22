@@ -169,12 +169,14 @@ def user_create():
 
 
 @bp.route('/user/<string:user_name>/')
+@protect
 def user_admin(user_name):
     user = current_users.read_name(user_name)
     return render_template('user.html', user=user)
 
 
 @bp.route('/user/delete/<int:user_id>/')
+@protect
 def user_delete(user_id):
     deleted_user = current_users.read_id(user_id)
     deleted = current_users.delete(deleted_user)
