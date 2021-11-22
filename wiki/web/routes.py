@@ -142,13 +142,14 @@ def user_login():
 @bp.route('/user/logout/')
 @login_required
 def user_logout():
-    current_user.set('authenticated', False)
+    current_user.set_authenticated(False)
     logout_user()
     flash('Logout successful.', 'success')
     return redirect(url_for('wiki.index'))
 
 
 @bp.route('/user/')
+@protect
 def user_index():
     users = current_users.read_all()
     return render_template('users.html', users=users)
