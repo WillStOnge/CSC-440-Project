@@ -169,13 +169,19 @@ def user_create():
 
 @bp.route('/user/<string:user_name>/')
 def user_admin(user_name):
-    user = current_users.read(user_name)
+    user = current_users.read_name(user_name)
     return render_template('user.html', user=user)
 
 
 @bp.route('/user/delete/<int:user_id>/')
 def user_delete(user_id):
-    pass
+    deleted_user = current_users.read_id(user_id)
+    deleted = current_users.delete(deleted_user)
+
+    if deleted is not None:
+        return redirect(url_for('wiki.user_index'))
+    return 'Could not delete user'
+
 
 
 @bp.route('/roles/')
