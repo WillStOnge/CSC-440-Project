@@ -14,12 +14,12 @@ from flask_login import login_user
 from flask_login import logout_user
 
 from wiki.core import Processor
-from wiki.web.controller import RoleManager
+from wiki.web.controller import RoleAssignmentManager
 from wiki.web.forms import EditorForm, UserForm
 from wiki.web.forms import LoginForm
 from wiki.web.forms import SearchForm
 from wiki.web.forms import URLForm
-from wiki.web import current_wiki
+from wiki.web import current_wiki, Database
 from wiki.web import current_users
 from wiki.web.util import protect
 
@@ -173,7 +173,8 @@ def user_create():
 @protect
 def user_admin(user_name):
     user = current_users.read_name(user_name)
-    return render_template('user.html', user=user)
+    user_roles = RoleAssignmentManager(Database()).get_user_roles(user)
+    return render_template('user.html', user=user, user_roles=user_roles)
 
 
 @bp.route('/user/delete/<int:user_id>/')
@@ -191,7 +192,6 @@ def user_delete(user_id):
 @bp.route('/roles/')
 def role_list():
     # TODO: finish implementing this function that return a list of all user roles
-    roles = RoleManager.read_all();
     pass
 
 
@@ -217,7 +217,20 @@ def role_assign(user_id, role_name):
 
 @bp.route('/role/unassign/<int:user_id>/<string:role_name>/')
 def role_unassign(user_id, role_name):
-    pass
+    role_assignment_manager = RoleAssignmentManager(Database())
+    user = current_users.read_id(user_id)
+    roles = role_assignment_manager.get_user_roles(user)
+
+    # Given a role name, checks if user has a role with that role name
+    # returns None if role is not found
+    role = next((role_object for role_object in roles if role_object.role_name == role_name), None)
+
+    if role is not None:
+        role_unassigned = role_assignment_manager.unassign_role_to_user(user, role)
+        if role_unassigned:
+            flash('Role "%s" was unassigned from user "%s"' % (role.role_name, user.user_name), 'success')
+            return redirect(url_for('wiki.user_admin', user_name=user.user_name))
+    return 'Could not unassign role'
 
 
 """

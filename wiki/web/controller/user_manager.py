@@ -55,7 +55,7 @@ class UserManager:
         result = self._database.execute_query_for_result(query)
 
         if result != None:
-            return User(user_id, result[0]["user_id"], str(result[0]["password"]), result[0]["is_active"])
+            return User(user_id, result[0]["user_name"], str(result[0]["password"]), result[0]["is_active"])
         else:
             return None
 

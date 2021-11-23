@@ -1,13 +1,16 @@
+from typing import Optional
+
 from wiki.web.model import Role, User
 from wiki.web.util import Database
+
 
 class RoleManager:
     """
     Class used to manage roles in the database.
     """
+
     def __init__(self, database: Database):
         self._database = database
-
 
     def create(self, role_name: str) -> Role:
         """
@@ -30,7 +33,6 @@ class RoleManager:
         # Return instance of new role.
         return self.read(role_name)
 
-
     def read(self, role_name: str) -> Role:
         """
         Reads role's data from the database an returns it.
@@ -47,7 +49,6 @@ class RoleManager:
         else:
             return None
 
-
     def read_all(self) -> list:
         """
         Reads all role's data from the database an returns it.
@@ -62,7 +63,6 @@ class RoleManager:
         else:
             return None
 
-
     def update(self, role: Role) -> bool:
         """
         Updates a role in the database.
@@ -75,7 +75,6 @@ class RoleManager:
                 SET role_name = '{}' \
                 WHERE role_id = {}".format(role.role_name, role.role_id)
         return self._database.execute_query(query)
-
 
     def delete(self, role: Role) -> bool:
         """
@@ -92,9 +91,9 @@ class RoleAssignmentManager:
     """
     Class used to manage role assignments in the database.
     """
+
     def __init__(self, database):
         self._database = database
-
 
     def assign_role_to_user(self, user: User, role: Role) -> bool:
         """
@@ -115,15 +114,16 @@ class RoleAssignmentManager:
             return False
 
         # Check if role assignment already exists.
-        select_query = "SELECT role_id FROM role_assignemnt WHERE role_id = {} AND user_id = {};".format(role.role_id, user.user_id)
+        select_query = "SELECT role_id FROM role_assignemnt WHERE role_id = {} AND user_id = {};".format(role.role_id,
+                                                                                                         user.user_id)
 
         if len(self._database.execute_query_for_result(select_query)) > 0:
             return False
 
         # Insert the role assignemnt.
-        insert_query = "INSERT INTO role_assignment (user_id, role_id) VALUES ({}, {});".format(user.user_id, role.role_id)
+        insert_query = "INSERT INTO role_assignment (user_id, role_id) VALUES ({}, {});".format(user.user_id,
+                                                                                                role.role_id)
         return self._database.execute_query(insert_query)
-
 
     def unassign_role_to_user(self, user: User, role: Role) -> bool:
         """
@@ -134,10 +134,10 @@ class RoleAssignmentManager:
 
         :returns: True if the unassignment was successful and false otherwise.
         """
-        return self._database.execute_query("DELETE role_assignment WHERE role_id = {} AND user_id = {}".format(role.role_id, user.user_id))
+        return self._database.execute_query("DELETE FROM role_assignment WHERE role_id = {} AND user_id = {}".format(
+            role.role_id, user.user_id))
 
-
-    def get_user_roles(self, user: User) -> list:
+    def get_user_roles(self, user: User) -> Optional[list[Role]]:
         """
         Reads the user's role data from the database and returns it.
         
@@ -149,7 +149,7 @@ class RoleAssignmentManager:
                 ON role_assignment.role_id = role.role_id WHERE user_id = {};".format(user.user_id)
         result = self._database.execute_query_for_result(query)
 
-        if result != None:
+        if result is not None:
             return [Role(role["role_id"], role["role_name"]) for role in result]
         else:
             return None

@@ -23,12 +23,16 @@
        </tr>
     </thead>
     <tbody>
-    {% for role in user_roles %}
-        <tr>
-            <td>{{ role.role_name }}</td>
-            <td class = "hidden_column">{{ role.role_id }}</td>
-        </tr>
-    {% endfor %}
+    {% if user_roles is not none %}
+        {% for role in user_roles %}
+            <tr>
+                <td>{{ role.role_name }}</td>
+                <td><p><a href="{{ url_for('wiki.role_unassign', user_id=user.user_id, role_name=role.role_name) }}" class="btn btn-danger">Delete</a></p></td>
+            </tr>
+        {% endfor %}
+    {% else %}
+        NONE
+    {% endif %}
     </tbody>
 	</table>
    {% else %}
