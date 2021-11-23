@@ -17,6 +17,19 @@
                 <td>{{ user.user_name }}</td>
             </tr>
 		</tbody>
+    <thead>
+       <tr>
+           <th>Roles</th>
+       </tr>
+    </thead>
+    <tbody>
+    {% for role in user_roles %}
+        <tr>
+            <td>{{ role.role_name }}</td>
+            <td class = "hidden_column">{{ role.role_id }}</td>
+        </tr>
+    {% endfor %}
+    </tbody>
 	</table>
    {% else %}
 	<p>User does not exist.</p>

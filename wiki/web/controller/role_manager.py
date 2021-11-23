@@ -18,12 +18,12 @@ class RoleManager:
         :returns: The newly created role or None if the role could not be created.
         """
         # Check if role already exists.
-        select_query = "SELECT role_id FROM role WHERE role_name = {};".format(role_name)
+        select_query = "SELECT role_id FROM role WHERE role_name = '{}';".format(role_name)
         if len(self._database.execute_query_for_result(select_query)) > 0:
             return None
 
         # Insert the role.
-        insert_query = "INSERT INTO role (role_name) VALUES ({});".format(role_name)
+        insert_query = "INSERT INTO role (role_name) VALUES ('{}');".format(role_name)
         if not self._database.execute_query(insert_query):
             return None
 
@@ -39,7 +39,7 @@ class RoleManager:
 
         :returns: An instance of the Role from the database. Returns None if the role is not found.
         """
-        query = "SELECT role_id, role_name FROM role WHERE role_name = {};".format(role_name)
+        query = "SELECT role_id, role_name FROM role WHERE role_name = '{}';".format(role_name)
         result = self._database.execute_query_for_result(query)
 
         if result != None:
@@ -72,7 +72,7 @@ class RoleManager:
         :returns: True if the update was successful and false otherwise.
         """
         query = "UPDATE role \
-                SET role_name = {} \
+                SET role_name = '{}' \
                 WHERE role_id = {}".format(role.role_name, role.role_id)
         return self._database.execute_query(query)
 
@@ -85,7 +85,7 @@ class RoleManager:
 
         :returns: True if the deletion was successful and false otherwise.
         """
-        return self._database.execute_query("DELETE role WHERE role_id = {}".format(role.role_id))
+        return self._database.execute_query("DELETE role WHERE role_id = '{}'".format(role.role_id))
 
 
 class RoleAssignmentManager:

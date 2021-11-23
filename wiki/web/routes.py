@@ -14,6 +14,7 @@ from flask_login import login_user
 from flask_login import logout_user
 
 from wiki.core import Processor
+from wiki.web.controller import RoleManager
 from wiki.web.forms import EditorForm, UserForm
 from wiki.web.forms import LoginForm
 from wiki.web.forms import SearchForm
@@ -189,6 +190,8 @@ def user_delete(user_id):
 
 @bp.route('/roles/')
 def role_list():
+    # TODO: finish implementing this function that return a list of all user roles
+    roles = RoleManager.read_all();
     pass
 
 
