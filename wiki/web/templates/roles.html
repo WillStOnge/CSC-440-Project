@@ -17,6 +17,7 @@
                 <tr>
                     <td>{{ role.role_id }}</td>
                     <td>{{ role.role_name }}</td>
+                    <td><p><a href="{{ url_for('wiki.role_delete', role_name=role.role_name) }}" class="btn btn-mini btn-danger">Remove</a></p></td>
                 </tr>
             {% endfor %}
         {% else %}
@@ -24,6 +25,34 @@
         {% endif %}
         </tbody>
 	</table>
-    <p><a href="{{ url_for('wiki.role_create_page') }}" class="btn btn-success">Create a Role</a></p>
+
+    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addRoleModal">Create Role</button>
+
+    <div class="modal fade" id ="addRoleModal" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-sm">
+        <div class="modal-content" role="document">
+                <div class = "modal-header">
+                       <button type="button" class="close" data-dismiss="modal">
+                        <span aria-hidden="true">x</span>
+                    </button>
+                    <h5 class = "modal-title" id="createNewRoleTitle">Create New Role</h5>
+                </div>
+                <div class = "modal-body">
+                    <div class ="modal-row">
+                        <div class ="modal-column">
+                            <div class ="modal-card__content" >
+                                <form action="{{ url_for('wiki.role_create') }}" method="POST" class="form-inline">
+                                {{ role_form.hidden_tag() }}
+                                {{ input(role_form.name, placeholder="Role Name", autocomplete="off") }}
+	                            <input type="submit" class="btn btn-success" value="Create">
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+        </div>
+      </div>
+    </div>
 {% endif %}
 {% endblock content %}

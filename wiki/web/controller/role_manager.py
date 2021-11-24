@@ -22,7 +22,7 @@ class RoleManager:
         """
         # Check if role already exists.
         select_query = "SELECT role_id FROM role WHERE role_name = '{}';".format(role_name)
-        if len(self._database.execute_query_for_result(select_query)) > 0:
+        if self._database.execute_query_for_result(select_query) is not None:
             return None
 
         # Insert the role.
@@ -84,7 +84,7 @@ class RoleManager:
 
         :returns: True if the deletion was successful and false otherwise.
         """
-        return self._database.execute_query("DELETE role WHERE role_id = '{}'".format(role.role_id))
+        return self._database.execute_query("DELETE from role WHERE role_id = '{}'".format(role.role_id))
 
 
 class RoleAssignmentManager:
@@ -108,16 +108,15 @@ class RoleAssignmentManager:
         select_role_query = "SELECT role_id FROM role WHERE role_id = {};".format(role.role_id)
         select_user_query = "SELECT user_id FROM user WHERE user_id = {};".format(user.user_id)
 
-        if len(self._database.execute_query_for_result(select_role_query)) == 0:
+        if self._database.execute_query_for_result(select_role_query) is None:
             return False
-        if len(self._database.execute_query_for_result(select_user_query)) == 0:
+        if self._database.execute_query_for_result(select_user_query) is None:
             return False
 
         # Check if role assignment already exists.
         select_query = "SELECT role_id FROM role_assignemnt WHERE role_id = {} AND user_id = {};".format(role.role_id,
                                                                                                          user.user_id)
-
-        if len(self._database.execute_query_for_result(select_query)) > 0:
+        if self._database.execute_query_for_result(select_query) is not None:
             return False
 
         # Insert the role assignment.
@@ -153,12 +152,3 @@ class RoleAssignmentManager:
             return [Role(role["role_id"], role["role_name"]) for role in result]
         else:
             return None
-
-
-    # def is_admin(self):
-    #     role_assignment_manager = RoleAssignmentManager(Database())
-    #     user_roles = role_assignment_manager.get_user_roles(self)
-    #     admin_role = next((role_object for role_object in user_roles if role_object.role_name == "admin"),
-    #                       None)
-    #     return admin_role is not None
-    #

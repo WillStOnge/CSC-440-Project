@@ -1,3 +1,10 @@
 td.hidden_column {
     display: none;
 }
+
+/* MODAL CARD */
+.modal-card__content {
+    font-family: sans-serif;
+    color: #0067b1;
+    font-size: 125%;
+}

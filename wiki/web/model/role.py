@@ -3,6 +3,15 @@ class Role:
         self._role_id = role_id
         self._role_name = role_name
 
+    def __eq__(self, other):
+        if isinstance(other, Role):
+            return (self._role_id == other._role_id) and (self._role_name == other._role_name)
+        else:
+            return False
+
+    def __hash__(self):
+        return hash((self._role_id, self._role_name))
+
     @property
     def role_id(self):
         return self._role_id
