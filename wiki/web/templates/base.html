@@ -20,6 +20,9 @@
 								<li><a href="{{ url_for('wiki.index') }}">Index</a></li>
 								<li><a href="{{ url_for('wiki.tags') }}">Tags</a></li>
 								<li><a href="{{ url_for('wiki.user_index') }}">Users</a></li>
+                                {% if current_user.is_admin %}
+                                    <li><a href="{{ url_for('wiki.roles') }}">Roles</a></li>
+                                {% endif %}
 								<li><a href="{{ url_for('wiki.search') }}">Search</a></li>
 								<li class="divider-vertical"></li>
 								<li><a href="{{ url_for('wiki.create') }}">New Page</a></li>

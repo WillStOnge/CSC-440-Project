@@ -33,7 +33,7 @@ class RoleManager:
         # Return instance of new role.
         return self.read(role_name)
 
-    def read(self, role_name: str) -> Role:
+    def read(self, role_name: str) -> Optional[Role]:
         """
         Reads role's data from the database an returns it.
         
@@ -44,12 +44,12 @@ class RoleManager:
         query = "SELECT role_id, role_name FROM role WHERE role_name = '{}';".format(role_name)
         result = self._database.execute_query_for_result(query)
 
-        if result != None:
+        if result is not None:
             return Role(result[0]["role_id"], role_name)
         else:
             return None
 
-    def read_all(self) -> list:
+    def read_all(self) -> Optional[list[Role]]:
         """
         Reads all role's data from the database an returns it.
 
@@ -58,7 +58,7 @@ class RoleManager:
         query = "SELECT role_id, role_name FROM role;"
         result = self._database.execute_query_for_result(query)
 
-        if result != None:
+        if result is not None:
             return [Role(role["role_id"], role["role_name"]) for role in result]
         else:
             return None
@@ -120,7 +120,7 @@ class RoleAssignmentManager:
         if len(self._database.execute_query_for_result(select_query)) > 0:
             return False
 
-        # Insert the role assignemnt.
+        # Insert the role assignment.
         insert_query = "INSERT INTO role_assignment (user_id, role_id) VALUES ({}, {});".format(user.user_id,
                                                                                                 role.role_id)
         return self._database.execute_query(insert_query)
@@ -153,3 +153,12 @@ class RoleAssignmentManager:
             return [Role(role["role_id"], role["role_name"]) for role in result]
         else:
             return None
+
+
+    # def is_admin(self):
+    #     role_assignment_manager = RoleAssignmentManager(Database())
+    #     user_roles = role_assignment_manager.get_user_roles(self)
+    #     admin_role = next((role_object for role_object in user_roles if role_object.role_name == "admin"),
+    #                       None)
+    #     return admin_role is not None
+    #

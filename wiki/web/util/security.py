@@ -3,6 +3,7 @@ from functools import wraps
 from flask import current_app
 from flask_login import current_user
 
+
 def make_salted_hash(password, salt=None):
     if not salt:
         salt = os.urandom(64)
@@ -25,4 +26,5 @@ def protect(f):
         if current_app.config.get('PRIVATE') and not current_user.is_authenticated:
             return current_app.login_manager.unauthorized()
         return f(*args, **kwargs)
+
     return wrapper

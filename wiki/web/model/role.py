@@ -3,16 +3,13 @@ class Role:
         self._role_id = role_id
         self._role_name = role_name
 
-
     @property
     def role_id(self):
         return self._role_id
 
-
     @property
     def role_name(self):
         return self._role_name
-
 
     @role_name.setter
     def role_name(self, value):

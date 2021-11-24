@@ -1,15 +1,18 @@
+from typing import Optional
+
 from wiki.web.model import User
 from wiki.web.util import Database
+
 
 class UserManager:
     """
     Class used to manage users in the database.
     """
+
     def __init__(self, database: Database):
         self._database = database
 
-
-    def create(self, user_name: str, password: str, is_active: int) -> User:
+    def create(self, user_name: str, password: str, is_active: int) -> Optional[User]:
         """
         Inserts a new user into the database.
 
@@ -25,7 +28,9 @@ class UserManager:
             return None
 
         # Insert the user.
-        insert_query = "INSERT INTO user (user_name, password, is_active) VALUES ('{}', '{}', {});".format(user_name, password, is_active)
+        insert_query = "INSERT INTO user (user_name, password, is_active) VALUES ('{}', '{}', {});".format(user_name,
+                                                                                                           password,
+                                                                                                           is_active)
         print(insert_query)
         if not self._database.execute_query(insert_query):
             return None
@@ -33,8 +38,7 @@ class UserManager:
         # Return instance of new user.
         return self.read_name(user_name)
 
-
-    def read_name(self, user_name: str) -> User:
+    def read_name(self, user_name: str) -> Optional[User]:
         """
         Reads user's data from the database an returns it.
 
@@ -45,20 +49,19 @@ class UserManager:
         query = "SELECT user_id, user_name, password, is_active FROM user WHERE user_name = '{}';".format(user_name)
         result = self._database.execute_query_for_result(query)
 
-        if result != None:
+        if result is not None:
             return User(result[0]["user_id"], user_name, str(result[0]["password"]), result[0]["is_active"])
         else:
             return None
 
-    def read_id(self, user_id: int) -> User:
+    def read_id(self, user_id: int) -> Optional[User]:
         query = "SELECT user_id, user_name, password, is_active FROM user WHERE user_id = '{}';".format(user_id)
         result = self._database.execute_query_for_result(query)
 
-        if result != None:
+        if result is not None:
             return User(user_id, result[0]["user_name"], str(result[0]["password"]), result[0]["is_active"])
         else:
             return None
-
 
     def read_all(self) -> list:
         """
@@ -69,11 +72,10 @@ class UserManager:
         query = "SELECT user_id, user_name, password, is_active FROM user;"
         result = self._database.execute_query_for_result(query)
 
-        if result != None:
+        if result is not None:
             return [User(user["user_id"], user["user_name"], user["password"], user["is_active"]) for user in result]
         else:
             return None
-
 
     def update(self, user: User) -> bool:
         """
@@ -87,7 +89,6 @@ class UserManager:
                 SET user_name = {}, password = {}, is_active = {} \
                 WHERE user_id = {}".format(user.user_name, user.password, user.is_active, user.user_id)
         return self._database.execute_query(query)
-        
 
     def delete(self, user: User) -> bool:
         """

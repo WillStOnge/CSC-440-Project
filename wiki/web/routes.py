@@ -14,7 +14,7 @@ from flask_login import login_user
 from flask_login import logout_user
 
 from wiki.core import Processor
-from wiki.web.controller import RoleAssignmentManager
+from wiki.web.controller import RoleAssignmentManager, RoleManager
 from wiki.web.forms import EditorForm, UserForm
 from wiki.web.forms import LoginForm
 from wiki.web.forms import SearchForm
@@ -24,12 +24,18 @@ from wiki.web import current_users
 from wiki.web.util import protect
 
 bp = Blueprint('wiki', __name__)
+current_user = current_user
 
 
 @bp.route('/')
 @protect
 def home():
     page = current_wiki.get('home')
+    role_assignment_manager = RoleAssignmentManager(Database())
+    user_roles = role_assignment_manager.get_user_roles(current_user)
+    user_admin_role = next((role_object for role_object in user_roles if role_object.role_name == "admin"), None)
+    if user_admin_role is not None:
+        current_user.is_admin = True
     if page:
         return display('home')
     return render_template('home.html')
@@ -188,33 +194,76 @@ def user_delete(user_id):
     return 'Could not delete user'
 
 
+@bp.route('/roles')
+@protect
+def roles():
+    role_manager = RoleManager(Database())
+    all_roles = role_manager.read_all()
+    temp_user = current_user
+    temp_user_roles = RoleAssignmentManager(Database()).get_user_roles(temp_user)
+    return render_template('roles.html', roles=all_roles)
 
-@bp.route('/roles/')
-def role_list():
-    # TODO: finish implementing this function that return a list of all user roles
-    pass
 
-
-@bp.route('/roles/<int:user_id>/')
+# TODO : unit test
+@bp.route('/role/<int:user_id>/')
 def role_list_assigned(user_id):
-    pass
+    role_assignment_manager = RoleAssignmentManager(Database())
+    user = current_users.read_id(user_id)
+    user_roles = role_assignment_manager.get_user_roles(user)
+    if user_roles is not None:
+        return user_roles
+    return 'Could not return role assigned to user'
 
 
-@bp.route('/role/create/')
-def role_create():
-    pass
+# TODO: unit test
+@bp.route('/roles/create/<string:role_name>')
+def role_create(role_name):
+    role_manager = RoleManager(Database())
+    user_role = role_manager.create(role_name)
+    if user_role is not None:
+        return user_role
+    return 'Could not create role: ' + role_name
 
 
-@bp.route('/role/delete/<string:role_name>/')
+# TODO: unit test
+@bp.route('/roles/delete/<string:role_name>/')
 def role_delete(role_name):
-    pass
+    role_manager = RoleManager(Database())
+    role_to_be_deleted = role_manager.read(role_name)
+    deleted_role = role_manager.delete(role_to_be_deleted)
+    if deleted_role is not None:
+        return deleted_role
+    return 'Could not delete role: ' + role_name
 
 
+# TODO: unit test
 @bp.route('/role/assign/<int:user_id>/<string:role_name>/')
 def role_assign(user_id, role_name):
-    pass
+    role_manager = RoleManager(Database())
+    role = role_manager.read(role_name)
+    if role is None:
+        return 'Could not find role: "%s" ' % role_name
+
+    role_assignment_manager = RoleAssignmentManager(Database())
+    user = current_users.read_id(user_id)
+    user_roles = role_assignment_manager.get_user_roles(user)
+
+    # Given a role name, checks if user has a role with that role name
+    # returns None if role is not found
+    existing_user_role = next((role_object for role_object in user_roles if role_object.role_name == role_name), None)
+
+    if existing_user_role is not None:
+        flash('User "%s" already has role: "%s"' % (user.user_name, role.role_name), 'warning')
+        return redirect(url_for('wiki.user_admin', user_name=user.user_name))
+
+    assigned_role = role_assignment_manager.assign_role_to_user(user, role)
+    if assigned_role is not None:
+        flash('Role "%s" was assigned to user "%s"' % (role.role_name, user.user_name), 'success')
+        return redirect(url_for('wiki.user_admin', user_name=user.user_name))
+    return 'Could not assign role: "%s" to user id: "%s"' % (role_name, user_id)
 
 
+# TODO: unit test
 @bp.route('/role/unassign/<int:user_id>/<string:role_name>/')
 def role_unassign(user_id, role_name):
     role_assignment_manager = RoleAssignmentManager(Database())
