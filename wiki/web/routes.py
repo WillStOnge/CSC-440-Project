@@ -8,6 +8,7 @@ from flask import redirect
 from flask import render_template
 from flask import request
 from flask import url_for
+from flask import session
 from flask_login import current_user
 from flask_login import login_required
 from flask_login import login_user
@@ -35,7 +36,7 @@ def home():
     user_roles = role_assignment_manager.get_user_roles(current_user)
     user_admin_role = next((role_object for role_object in user_roles if role_object.role_name == "admin"), None)
     if user_admin_role is not None:
-        current_user.is_admin = True
+        session['user_is_admin'] = True
     if page:
         return display('home')
     return render_template('home.html')
@@ -142,7 +143,7 @@ def user_login():
         login_user(user)
         user.set_authenticated(True)
         flash('Login successful.', 'success')
-        return redirect(request.args.get("next") or url_for('wiki.index'))
+        return redirect(request.args.get("next") or url_for('wiki.home'))
     return render_template('login.html', form=form)
 
 
@@ -152,7 +153,7 @@ def user_logout():
     current_user.set_authenticated(False)
     logout_user()
     flash('Logout successful.', 'success')
-    return redirect(url_for('wiki.index'))
+    return redirect(url_for('wiki.home'))
 
 
 @bp.route('/user/')
@@ -226,6 +227,12 @@ def role_create(role_name):
 
 
 # TODO: unit test
+@bp.route('/roles/create/')
+def role_create_page():
+    pass
+
+
+# TODO: unit test
 @bp.route('/roles/delete/<string:role_name>/')
 def role_delete(role_name):
     role_manager = RoleManager(Database())
@@ -268,11 +275,11 @@ def role_assign(user_id, role_name):
 def role_unassign(user_id, role_name):
     role_assignment_manager = RoleAssignmentManager(Database())
     user = current_users.read_id(user_id)
-    roles = role_assignment_manager.get_user_roles(user)
+    user_roles = role_assignment_manager.get_user_roles(user)
 
     # Given a role name, checks if user has a role with that role name
     # returns None if role is not found
-    role = next((role_object for role_object in roles if role_object.role_name == role_name), None)
+    role = next((role_object for role_object in user_roles if role_object.role_name == role_name), None)
 
     if role is not None:
         role_unassigned = role_assignment_manager.unassign_role_to_user(user, role)

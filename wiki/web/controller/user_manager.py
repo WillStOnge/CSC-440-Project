@@ -38,7 +38,7 @@ class UserManager:
         # Return instance of new user.
         return self.read_name(user_name)
 
-    def read_name(self, user_name: str) -> Optional[User]:
+    def read_name(self, user_name: str) -> User:
         """
         Reads user's data from the database an returns it.
 
@@ -54,7 +54,7 @@ class UserManager:
         else:
             return None
 
-    def read_id(self, user_id: int) -> Optional[User]:
+    def read_id(self, user_id: int) -> User:
         query = "SELECT user_id, user_name, password, is_active FROM user WHERE user_id = '{}';".format(user_id)
         result = self._database.execute_query_for_result(query)
 

@@ -27,7 +27,7 @@
         {% for role in user_roles %}
             <tr>
                 <td>{{ role.role_name }}</td>
-                <td><p><a href="{{ url_for('wiki.role_unassign', user_id=user.user_id, role_name=role.role_name) }}" class="btn btn-danger">Delete</a></p></td>
+                <td><p><a href="{{ url_for('wiki.role_unassign', user_id=user.user_id, role_name=role.role_name) }}" class="btn btn-mini btn-danger">Remove</a></p></td>
             </tr>
         {% endfor %}
     {% else %}
@@ -35,7 +35,7 @@
     {% endif %}
     </tbody>
 	</table>
-   {% else %}
+    {% else %}
 	<p>User does not exist.</p>
 {% endif %}
 {% endblock content %}

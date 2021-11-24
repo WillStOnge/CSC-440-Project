@@ -3,7 +3,7 @@
 {% block title %}Roles{% endblock title %}
 
 {% block content %}
-{% if current_user.is_admin %}
+{% if session['user_is_admin'] %}
 	<table class="table">
         <thead>
            <tr>
@@ -17,7 +17,6 @@
                 <tr>
                     <td>{{ role.role_id }}</td>
                     <td>{{ role.role_name }}</td>
-                    <!--<td><p><a href="{{ url_for('wiki.role_unassign', user_id=user.user_id, role_name=role.role_name) }}" class="btn btn-danger">Delete</a></p></td>-->
                 </tr>
             {% endfor %}
         {% else %}
@@ -25,5 +24,6 @@
         {% endif %}
         </tbody>
 	</table>
+    <p><a href="{{ url_for('wiki.role_create_page') }}" class="btn btn-success">Create a Role</a></p>
 {% endif %}
 {% endblock content %}
