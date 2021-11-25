@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block title %}Users{% endblock title %}
+
+{% block content %}
+{% if users %}
+	<table class="table">
+		<thead>
+			<tr>
+				<th>ID</th>
+				<th>Name</th>
+			</tr>
+		</thead>
+		<tbody>
+			{% for user in users %}
+				<tr>
+					<td>{{ user.user_id }}</td>
+					<td>{{ user.user_name }}</td>
+					<td><p><a href="{{ url_for('wiki.user_admin', user_name=user.user_name) }}" class="btn btn-primary">View</a></p></td>
+					<td><p><a href="{{ url_for('wiki.user_delete', user_id=user.user_id) }}" class="btn btn-danger">Delete</a></p></td>
+				</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+    <p><a href="{{ url_for('wiki.user_create') }}" class="btn btn-success">Create a User</a></p>
+{% else %}
+	<p>There are no users.</p>
+{% endif %}
+{% endblock content %}

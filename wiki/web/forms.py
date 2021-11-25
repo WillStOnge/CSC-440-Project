@@ -45,13 +45,18 @@ class LoginForm(Form):
     password = PasswordField('', [InputRequired()])
 
     def validate_name(form, field):
-        user = current_users.get_user(field.data)
-        if not user:
+        user = current_users.read_name(field.data)
+        if user == None:
             raise ValidationError('This username does not exist.')
 
     def validate_password(form, field):
-        user = current_users.get_user(form.name.data)
-        if not user:
-            return
+        user = current_users.read_name(form.name.data)
+        if user == None:
+            raise ValidationError('This username does not exist.')
         if not user.check_password(field.data):
             raise ValidationError('Username and password do not match.')
+
+
+class UserForm(Form):
+    name = TextField('', [InputRequired()])
+    password = PasswordField('', [InputRequired()])

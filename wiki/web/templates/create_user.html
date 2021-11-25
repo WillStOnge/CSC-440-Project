@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block title %}Create a new user{% endblock title %}
+{% block content %}
+<form method="POST" class="form-inline">
+	{{ form.hidden_tag() }}
+	{{ input(form.name, placeholder="User Name", autocomplete="off") }}
+	{{ input(form.password, placeholder="Password", autocomplete="off") }}
+	<input type="submit" class="btn btn-success" value="Create">
+</form>
+{% endblock content %}
+
+{% block sidebar %}
+{% endblock sidebar %}

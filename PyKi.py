@@ -1,8 +1,4 @@
-#!/Users/smcho/virtualenv/riki/bin/python
-
-# -*- coding: utf-8 -*-
 import os
-
 from wiki import create_app
 
 directory = os.getcwd()
