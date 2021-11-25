@@ -2,6 +2,8 @@
     Routes
     ~~~~~~
 """
+from functools import wraps
+
 from flask import Blueprint
 from flask import flash
 from flask import redirect
@@ -25,6 +27,20 @@ from wiki.web import current_users
 from wiki.web.util import protect
 
 bp = Blueprint('wiki', __name__)
+
+
+def requires_access_level(role_name):
+    def decorator(f):
+        @wraps(f)
+        def decorated_function(*args, **kwargs):
+            if not current_user.is_authenticated:
+                return redirect(url_for('wiki.login'))
+            current_user_role = RoleManager(Database()).read(role_name)
+            if current_user_role is None:
+                return redirect(url_for('wiki.home', message="You do not have access to that page."))
+            return f(*args, **kwargs)
+        return decorated_function
+    return decorator
 
 
 @bp.route('/')
@@ -166,6 +182,7 @@ def user_index():
 
 @bp.route('/user/create/', methods=['POST', 'GET'])
 @protect
+@requires_access_level('admin')
 def user_create():
     form = UserForm()
     if form.validate_on_submit():
@@ -202,6 +219,7 @@ def user_delete(user_id):
 
 @bp.route('/roles')
 @protect
+@requires_access_level('admin')
 def roles():
     role_manager = RoleManager(Database())
     all_roles = role_manager.read_all()
@@ -282,6 +300,9 @@ def role_unassign(user_id, role_name):
     elif role is None:
         flash('Could not find role: "%s" from user: "%s"' % (role_name, user.user_name), 'error')
     return redirect(url_for('wiki.user_admin', user_name=user.user_name))
+
+
+
 
 
 """
