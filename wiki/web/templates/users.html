@@ -3,7 +3,7 @@
 {% block title %}Users{% endblock title %}
 
 {% block content %}
-{% if users %}
+{% if users and session['user_is_admin'] %}
 	<table class="table">
 		<thead>
 			<tr>
@@ -24,6 +24,6 @@
 	</table>
     <p><a href="{{ url_for('wiki.user_create') }}" class="btn btn-success">Create a User</a></p>
 {% else %}
-	<p>There are no users.</p>
+	<p>The page you are trying to access is not accessible.</p>
 {% endif %}
 {% endblock content %}

@@ -60,3 +60,7 @@ class LoginForm(FlaskForm):
 class UserForm(FlaskForm):
     name = TextField('', [InputRequired()])
     password = PasswordField('', [InputRequired()])
+
+
+class RoleForm(FlaskForm):
+    name = TextField('', [InputRequired()])
