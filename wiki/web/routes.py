@@ -34,6 +34,7 @@ def home():
     user_roles = RoleAssignmentManager(Database()).get_user_roles(current_user)
     user_admin_role = next((role_object for role_object in user_roles if role_object.role_name == "admin"), None)
     user_guest_role = next((role_object for role_object in user_roles if role_object.role_name == "guest"), None)
+
     if user_admin_role is not None:
         session['user_is_admin'] = True
     if user_guest_role is not None:
