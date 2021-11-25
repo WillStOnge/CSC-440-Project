@@ -9,10 +9,15 @@
         <input type="submit" class="btn btn-success" value="Create">
     </form>
 {% else %}
+<p class="alert alert-success">"You are not authorized!"</p>
 <p>As a guest you may view our pages. Please contact our system administrator if you want to request create page access.</p>
 {% endif %}
 {% endblock content %}
 
+
 {% block sidebar %}
+{% if not session['user_is_guest'] %}
 <p class="alert alert-success">Thank you for creating new content!</p>
+{% endif %}
 {% endblock sidebar %}
+

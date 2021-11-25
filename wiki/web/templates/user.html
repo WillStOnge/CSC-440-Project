@@ -41,20 +41,20 @@
 
                     {% if roles_to_assign %}
                         <tr>
-                            {% for role in roles_to_assign %}
                             <td>
                                 <select style="width: 40%"id="roles" name="roles">
-                                <option value="" hidden="hidden">Choose role</option>
-                                <option value="{{ role.role_name }}">{{ role.role_name }}</option>
+                                {% set ns = namespace(role_name="") %}
+                                {% for role in roles_to_assign %}
+                                    <option value="{{ role.role_name }}">{{ role.role_name }}</option>
+                                    {% set ns.role_name = role.role_name %}
+                                {% endfor %}
                                 </select>
                             </td>
                             <td>
-                                <a href="{{ url_for('wiki.role_assign', user_id=user.user_id, role_name=role.role_name) }}" class="btn btn-mini btn-success">Add</a>
+                                <a href="{{ url_for('wiki.role_assign', user_id=user.user_id, role_name=ns.role_name) }}" class="btn btn-mini btn-success">Add</a>
                             </td>
-                        {% endfor %}
                         </tr>
                     {% endif %}
-
                 </tbody>
 
         </table>
