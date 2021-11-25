@@ -27,7 +27,9 @@
 
 {% block sidebar %}
 <ul class="nav nav-tabs nav-stacked">
+    {% if not session['user_is_guest'] %}
 	<li><a href="{{ url_for('wiki.create') }}">New Page</a></li>
+    {% endif %}
 	<li><a href="{{ url_for('wiki.tags') }}">Tag List</a></li>
 	<li><a href="{{ url_for('wiki.search') }}">Search</a></li>
 </ul>

@@ -4,21 +4,68 @@
 
 {% block content %}
 {% if user %}
-	<table class="table">
-		<thead>
-			<tr>
-				<th>ID</th>
-				<th>Name</th>
-			</tr>
-		</thead>
-		<tbody>
-            <tr>
-                <td>{{ user.user_id }}</td>
-                <td>{{ user.user_name }}</td>
-            </tr>
-		</tbody>
-	</table>
-   {% else %}
-	<p>User does not exist.</p>
+    {% if session['user_is_admin'] %}
+    <table class="table">
+
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Name</th>
+        </tr>
+      </thead>
+
+      <tbody>
+              <tr>
+                  <td>{{ user.user_id }}</td>
+                  <td>{{ user.user_name }}</td>
+              </tr>
+      </tbody>
+
+          <thead>
+             <tr>
+                 <th>Roles</th>
+             </tr>
+          </thead>
+
+          <tbody>
+              {% if user_roles is not none %}
+                  {% for role in user_roles %}
+                      <tr>
+                          <td>{{ role.role_name }}</td>
+                          <td><p><a href="{{ url_for('wiki.role_unassign', user_id=user.user_id, role_name=role.role_name) }}" class="btn btn-mini btn-danger">Remove</a></p></td>
+                      </tr>
+                  {% endfor %}
+              {% else %}
+                  NONE
+              {% endif %}
+
+              {% if roles_to_assign %}
+                  <tr>
+                      <td>
+                          <select style="width: 40%"id="roles" name="roles">
+                          {% set ns = namespace(role_name="") %}
+                          {% for role in roles_to_assign %}
+                              <option value="{{ role.role_name }}">{{ role.role_name }}</option>
+                              {% set ns.role_name = role.role_name %}
+                          {% endfor %}
+                          </select>
+                      </td>
+                      <td>
+                          <a href="{{ url_for('wiki.role_assign', user_id=user.user_id, role_name=ns.role_name) }}" class="btn btn-mini btn-success">Add</a>
+                      </td>
+                  </tr>
+              {% endif %}
+          </tbody>
+
+    </table>
+    <p>
+          <a href="{{ url_for('wiki.user_index') }}" class="btn btn-primary">See all Users</a>
+          <a href="{{ url_for('wiki.user_delete', user_id=user.user_id) }}" class="btn btn-danger">Delete</a>
+    </p>
+    {% else %}
+    <p>The page you are trying to access is not accessible.</p>
+    {% endif %}
+{% else %}
+<p>User does not exist.</p>
 {% endif %}
 {% endblock content %}
