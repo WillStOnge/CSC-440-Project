@@ -3,7 +3,7 @@
 {% block title %}Roles{% endblock title %}
 
 {% block content %}
-{% if session['user_is_admin'] %}
+{% if session['user_is_guest'] %}
 	<table class="table">
         <thead>
            <tr>
@@ -54,5 +54,7 @@
         </div>
       </div>
     </div>
+{% else %}
+<p class="alert alert-success">"You are not authorized!"</p>
 {% endif %}
 {% endblock content %}
