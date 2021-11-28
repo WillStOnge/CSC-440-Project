@@ -1,5 +1,3 @@
-from typing import Optional
-
 from wiki.web.model import Role, User
 from wiki.web.util import Database
 
@@ -8,9 +6,9 @@ class RoleManager:
     """
     Class used to manage roles in the database.
     """
-
     def __init__(self, database: Database):
         self._database = database
+
 
     def create(self, role_name: str) -> Role:
         """
@@ -33,7 +31,8 @@ class RoleManager:
         # Return instance of new role.
         return self.read(role_name)
 
-    def read(self, role_name: str) -> Optional[Role]:
+
+    def read(self, role_name: str) -> Role:
         """
         Reads role's data from the database an returns it.
         
@@ -49,7 +48,8 @@ class RoleManager:
         else:
             return None
 
-    def read_all(self) -> Optional[list[Role]]:
+
+    def read_all(self) -> list[Role]:
         """
         Reads all role's data from the database an returns it.
 
@@ -63,6 +63,7 @@ class RoleManager:
         else:
             return None
 
+
     def update(self, role: Role) -> bool:
         """
         Updates a role in the database.
@@ -75,6 +76,7 @@ class RoleManager:
                 SET role_name = '{}' \
                 WHERE role_id = {}".format(role.role_name, role.role_id)
         return self._database.execute_query(query)
+
 
     def delete(self, role: Role) -> bool:
         """
@@ -94,6 +96,7 @@ class RoleAssignmentManager:
 
     def __init__(self, database):
         self._database = database
+
 
     def assign_role_to_user(self, user: User, role: Role) -> bool:
         """
@@ -124,6 +127,7 @@ class RoleAssignmentManager:
                                                                                                 role.role_id)
         return self._database.execute_query(insert_query)
 
+
     def unassign_role_to_user(self, user: User, role: Role) -> bool:
         """
         Unassigns a role from a user.
@@ -136,19 +140,17 @@ class RoleAssignmentManager:
         return self._database.execute_query("DELETE FROM role_assignment WHERE role_id = {} AND user_id = {}".format(
             role.role_id, user.user_id))
 
-    def get_user_roles(self, user: User) -> Optional[list[Role]]:
+
+    def get_user_roles(self, user: User) -> list[Role]:
         """
         Reads the user's role data from the database and returns it.
         
         :param user: User to get roles for.
 
-        :returns: List of roles assigned to a user. Returns None if no roles are assigned.
+        :returns: List of roles assigned to a user.
         """
         query = "SELECT role.role_id AS role_id, role_name FROM role INNER JOIN role_assignment \
                 ON role_assignment.role_id = role.role_id WHERE user_id = {};".format(user.user_id)
         result = self._database.execute_query_for_result(query)
 
-        if result is not None:
-            return [Role(role["role_id"], role["role_name"]) for role in result]
-        else:
-            return None
+        return [Role(role["role_id"], role["role_name"]) for role in result]
