@@ -17,7 +17,7 @@
 
 {% block sidebar %}
 {% if not session['user_is_guest'] %}
-<p class="alert alert-success">Thank you for creating new content!</p>
+    <a href="{{ url_for('wiki.upload') }}" target="_blank">Upload a file</a>
 {% endif %}
 {% endblock sidebar %}
 

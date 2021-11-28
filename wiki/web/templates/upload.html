@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block title %}Upload{% endblock title %}
+{% block content %}
+<div class="dropzone" id="dropzone">
+    <div class="dz-message needsclick">
+        <h2>Drop files here or click to upload.</h2>
+    </div>
+</div>
+{% endblock content %}
+
+{% block sidebar %}
+<h5>Upload image file (max size: {{ config.FILE_SIZE_MAX_MB }} MB)</h5>
+{% endblock sidebar %}
+
+{% block postscripts %}
+$(document).ready(function() {
+    $("#dropzone").dropzone({
+        url: '/uploading',
+        width: 300,
+        height: 300,
+        progressBarWidth: '100%',
+        maxFilesize: '{{ config.FILE_SIZE_MAX_MB }} MB'
+    })
+});
+{% endblock postscripts %}

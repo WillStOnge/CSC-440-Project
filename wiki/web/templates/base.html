@@ -6,6 +6,8 @@
 		<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='bootstrap.css') }}">
 		<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='responsive.css') }}">
 		<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='pygments.css') }}">
+		<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='dropzone.min.css') }}">
+		<title>{{ config.TITLE }}</title>
 	</head>
 
 	<body>
@@ -92,6 +94,7 @@
 			}
 		</script>
 		<script src="{{ url_for('static', filename='bootstrap.min.js') }}"></script>
+		<script src="{{ url_for('static', filename='dropzone.min.js') }}"></script>
 		<script type="text/javascript">
 			{% block postscripts %}
 			{% endblock postscripts %}
