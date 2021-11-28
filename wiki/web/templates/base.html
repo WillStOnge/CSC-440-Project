@@ -38,9 +38,17 @@
 								<li></li>
 							</ul>
 
-							<ul class="nav pull-right">
+                            <ul class="nav pull-right">
 								{% if current_user.is_authenticated %}
-									<li><a href="{{ url_for('wiki.user_logout') }}">Logout</a></li>
+                                    <li class="nav-item dropdown">
+                                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                          Welcome, {{ current_user.user_name }}
+                                        </a>
+                                        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                          <a class="dropdown-item" href="{{ url_for('wiki.user_admin', user_name=current_user.user_name) }}">View Profile</a>
+                                          <a class="dropdown-item" href="{{ url_for('wiki.user_logout') }}">Logout</a>
+                                        </div>
+                                    </li>
 								{% else %}
 									<li><a href="{{ url_for('wiki.user_login') }}">Login</a></li>
 								{% endif %}
