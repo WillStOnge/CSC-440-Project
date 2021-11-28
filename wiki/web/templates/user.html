@@ -42,16 +42,20 @@
                     {% if roles_to_assign %}
                         <tr>
                             <td>
-                                <select style="width: 40%"id="roles" name="roles">
-                                {% set ns = namespace(role_name="") %}
+                                <select style="width: 40%" id="roles" name="roles">
                                 {% for role in roles_to_assign %}
                                     <option value="{{ role.role_name }}">{{ role.role_name }}</option>
-                                    {% set ns.role_name = role.role_name %}
                                 {% endfor %}
                                 </select>
                             </td>
                             <td>
-                                <a href="{{ url_for('wiki.role_assign', user_id=user.user_id, role_name=ns.role_name) }}" class="btn btn-mini btn-success">Add</a>
+                                <script>
+                                    function assign_role()
+                                    {
+                                        window.location = "/role/assign/{{ user.user_id }}/" + $('#roles').find(":selected").text();
+                                    }
+                                </script>
+                                <button onclick="assign_role()" class="btn btn-mini btn-success">Add</button>
                             </td>
                         </tr>
                     {% endif %}

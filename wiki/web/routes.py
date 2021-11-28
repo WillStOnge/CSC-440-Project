@@ -3,6 +3,7 @@
     ~~~~~~
 """
 from functools import wraps
+import os
 
 from flask import Blueprint
 from flask import flash
@@ -11,10 +12,13 @@ from flask import render_template
 from flask import request
 from flask import url_for
 from flask import session
+from flask import jsonify
+from flask import current_app
 from flask_login import current_user
 from flask_login import login_required
 from flask_login import login_user
 from flask_login import logout_user
+from werkzeug.utils import secure_filename
 
 from wiki.core import Processor
 from wiki.web.controller import RoleAssignmentManager, RoleManager
@@ -25,6 +29,7 @@ from wiki.web.forms import URLForm
 from wiki.web import current_wiki, Database
 from wiki.web import current_users
 from wiki.web.util import protect
+
 
 bp = Blueprint('wiki', __name__)
 
@@ -305,7 +310,17 @@ def role_unassign(user_id, role_name):
     return redirect(url_for('wiki.user_admin', user_name=user.user_name))
 
 
+@bp.route("/upload")
+def upload():
+    return render_template("upload.html")
 
+
+@bp.route("/uploading", methods=["POST", "GET"])
+def uploading():
+    file = request.files['file']
+    if file:
+        file.save(os.path.join(current_app.config['UPLOAD_DIR'], secure_filename(file.filename)))
+    return ""
 
 
 """
