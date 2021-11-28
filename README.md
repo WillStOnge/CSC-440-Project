@@ -4,8 +4,9 @@ You can access the wiki [http://wiki440.ms2ms.com](http://wiki440.ms2ms.com).
 
 ## Configuration
     
-1. Update CONTENT_DIR in config.py. 
+1. Update CONTENT_DIR and UPLOAD_DIR in config.py. 
     * CONTENT_DIR should point to the directory where your `content` is located.
+    * UPLOAD_DIR should point to the directory where your file uploads will be placed.
 2. When you want to use login, make PRIVATE = True in config.py.
 3. Install requirements using `pip install -r requirements.txt`
 
