@@ -1,34 +1,14 @@
-"""
-    Routes
-    ~~~~~~
-"""
+from flask import Blueprint, flash, redirect, render_template, request, url_for, session, jsonify, current_app
+from flask_login import current_user, login_required, login_user, logout_user
+from werkzeug.utils import secure_filename
 from functools import wraps
 import os
 
-from flask import Blueprint
-from flask import flash
-from flask import redirect
-from flask import render_template
-from flask import request
-from flask import url_for
-from flask import session
-from flask import jsonify
-from flask import current_app
-from flask_login import current_user
-from flask_login import login_required
-from flask_login import login_user
-from flask_login import logout_user
-from werkzeug.utils import secure_filename
-
-from wiki.core import Processor
+from wiki.web.forms import EditorForm, UserForm, RoleForm, LoginForm, SearchForm, URLForm
 from wiki.web.controller import RoleAssignmentManager, RoleManager
-from wiki.web.forms import EditorForm, UserForm, RoleForm
-from wiki.web.forms import LoginForm
-from wiki.web.forms import SearchForm
-from wiki.web.forms import URLForm
-from wiki.web import current_wiki, Database
-from wiki.web import current_users
+from wiki.web import current_wiki, current_users, Database
 from wiki.web.util import protect
+from wiki.core import Processor
 
 
 bp = Blueprint('wiki', __name__)
@@ -321,12 +301,6 @@ def uploading():
     if file:
         file.save(os.path.join(current_app.config['UPLOAD_DIR'], secure_filename(file.filename)))
     return ""
-
-
-"""
-    Error Handlers
-    ~~~~~~~~~~~~~~
-"""
 
 
 @bp.errorhandler(404)
