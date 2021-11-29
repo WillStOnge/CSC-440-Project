@@ -53,7 +53,15 @@ Turns into:
 ### Level 3</code></pre>
 <p></p>
 <br/>
-<a href="{{ url_for('wiki.upload') }}" target="_blank">Upload a file</a>
+<h4 style="display:inline;">Images</h4><i style="font-size:.8em">&emsp;&emsp;Click image to enlarge</i>
+<ul style="height: 180px; overflow:hidden; overflow-y:scroll;">
+{%- for item in list.files %}
+    <li><a href="{{ url_for('static', filename='Uploads/' + item.name) }}" target="_blank"><img src="{{ url_for('static', filename='Uploads/' + item.name) }}" alt="{{ item.name }}" style="max-height:80px; max-width:80px;"></a> {{ item.name }}</li><li style="height:5px"></li>
+{%- endfor %}
+</ul>
+<a href="{{ url_for('wiki.upload') }}" target="_blank">Upload a new image</a>
+<script>
+</script>
 {% endblock sidebar %}
 
 {% block postscripts -%}

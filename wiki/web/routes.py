@@ -4,6 +4,7 @@ from werkzeug.utils import secure_filename
 from functools import wraps
 import os
 
+import config
 from wiki.web.forms import EditorForm, UserForm, RoleForm, LoginForm, SearchForm, URLForm
 from wiki.web.controller import RoleAssignmentManager, RoleManager
 from wiki.web import current_wiki, current_users, Database
@@ -28,6 +29,17 @@ def requires_access_level(role_name):
             return f(*args, **kwargs)
         return decorated_function
     return decorator
+
+
+def get_list(path):
+    file_dict = dict(name=path, files=[])
+    try: file_list = os.listdir(path)
+    except OSError: pass
+    else:
+        for filename in file_list:
+            if not os.path.isdir(os.path.join(path, filename)):
+                file_dict['files'].append(dict(name=filename))
+    return file_dict
 
 
 @bp.route('/')
@@ -67,7 +79,7 @@ def create():
     form = URLForm()
     if form.validate_on_submit():
         return redirect(url_for('wiki.edit', url=form.clean_url(form.url.data)))
-    return render_template('create.html', form=form)
+    return render_template('create.html', form=form, dir=config.UPLOAD_DIR)
 
 
 @bp.route('/edit/<path:url>/', methods=['GET', 'POST'])
@@ -82,8 +94,7 @@ def edit(url):
         page.save()
         flash('"%s" was saved.' % page.title, 'success')
         return redirect(url_for('wiki.display', url=url))
-    return render_template('editor.html', form=form, page=page)
-
+    return render_template('editor.html', form=form, page=page, dir=config.UPLOAD_DIR, list=get_list(config.UPLOAD_DIR))
 
 @bp.route('/preview/', methods=['POST'])
 @protect
