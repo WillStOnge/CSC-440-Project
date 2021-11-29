@@ -2,12 +2,16 @@
 
 {% block title %}Create a new user{% endblock title %}
 {% block content %}
+{% if session['user_is_admin'] %}
 <form method="POST" class="form-inline">
 	{{ form.hidden_tag() }}
 	{{ input(form.name, placeholder="User Name", autocomplete="off") }}
 	{{ input(form.password, placeholder="Password", autocomplete="off") }}
 	<input type="submit" class="btn btn-success" value="Create">
 </form>
+{% else %}
+<p class="alert alert-success">"You are not authorized!"</p>
+{% endif %}
 {% endblock content %}
 
 {% block sidebar %}

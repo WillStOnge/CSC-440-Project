@@ -24,10 +24,7 @@ class Database(Singleton):
             columns = [column[0] for column in cursor.description]
             records = [dict(zip(columns, row)) for row in cursor.fetchall()]
 
-            if len(records) > 0:
-                return records
-            else:
-                return None
+            return records
         except:
             return None
 

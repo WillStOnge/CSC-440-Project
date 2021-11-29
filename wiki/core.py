@@ -1,15 +1,6 @@
-"""
-    Wiki core
-    ~~~~~~~~~
-"""
 from collections import OrderedDict
-from io import open
-import os
-import re
-
-from flask import abort
-from flask import url_for
-import markdown
+from flask import abort, url_for
+import os, re, markdown
 
 
 def clean_url(url):
@@ -75,9 +66,9 @@ class Processor(object):
         It also offers some helper methods that can be used for various
         cases.
     """
-
     preprocessors = []
     postprocessors = [wikilink]
+
 
     def __init__(self, text):
         """
@@ -100,6 +91,7 @@ class Processor(object):
         self.final = None
         self.meta = None
 
+
     def process_pre(self):
         """
             Content preprocessor.
@@ -108,6 +100,7 @@ class Processor(object):
         for processor in self.preprocessors:
             current = processor(current)
         self.pre = current
+
 
     def process_markdown(self):
         """
@@ -121,6 +114,7 @@ class Processor(object):
             Split text into raw meta and content.
         """
         self.meta_raw, self.markdown = self.pre.split('\n\n', 1)
+
 
     def process_meta(self):
         """
@@ -140,6 +134,7 @@ class Processor(object):
             self.meta[key.lower()] = \
                 '\n'.join(self.md.Meta[key.lower()])
 
+
     def process_post(self):
         """
             Content postprocessor.
@@ -148,6 +143,7 @@ class Processor(object):
         for processor in self.postprocessors:
             current = processor(current)
         self.final = current
+
 
     def process(self):
         """
@@ -173,16 +169,20 @@ class Page(object):
             self.load()
             self.render()
 
+
     def __repr__(self):
         return "<Page: {}@{}>".format(self.url, self.path)
+
 
     def load(self):
         with open(self.path, 'r', encoding='utf-8') as f:
             self.content = f.read()
 
+
     def render(self):
         processor = Processor(self.content)
         self._html, self.body, self._meta = processor.process()
+
 
     def save(self, update=True):
         folder = os.path.dirname(self.path)
@@ -198,22 +198,28 @@ class Page(object):
             self.load()
             self.render()
 
+
     @property
     def meta(self):
         return self._meta
 
+
     def __getitem__(self, name):
         return self._meta[name]
 
+
     def __setitem__(self, name, value):
         self._meta[name] = value
+
 
     @property
     def html(self):
         return self._html
 
+
     def __html__(self):
         return self.html
+
 
     @property
     def title(self):
@@ -222,9 +228,11 @@ class Page(object):
         except KeyError:
             return self.url
 
+
     @title.setter
     def title(self, value):
         self['title'] = value
+
 
     @property
     def tags(self):
@@ -232,6 +240,7 @@ class Page(object):
             return self['tags']
         except KeyError:
             return ""
+
 
     @tags.setter
     def tags(self, value):
@@ -242,12 +251,15 @@ class Wiki(object):
     def __init__(self, root):
         self.root = root
 
+
     def path(self, url):
         return os.path.join(self.root, url + '.md')
+
 
     def exists(self, url):
         path = self.path(url)
         return os.path.exists(path)
+
 
     def get(self, url):
         path = self.path(url)
@@ -256,17 +268,20 @@ class Wiki(object):
             return Page(path, url)
         return None
 
+
     def get_or_404(self, url):
         page = self.get(url)
         if page:
             return page
         abort(404)
 
+
     def get_bare(self, url):
         path = self.path(url)
         if self.exists(url):
             return False
         return Page(path, url, new=True)
+
 
     def move(self, url, newurl):
         source = os.path.join(self.root, url) + '.md'
@@ -289,12 +304,14 @@ class Wiki(object):
             os.makedirs(folder)
         os.rename(source, target)
 
+
     def delete(self, url):
         path = self.path(url)
         if not self.exists(url):
             return False
         os.remove(path)
         return True
+
 
     def index(self):
         """
@@ -318,6 +335,7 @@ class Wiki(object):
                     pages.append(page)
         return sorted(pages, key=lambda x: x.title.lower())
 
+
     def index_by(self, key):
         """
             Get an index based on the given key.
@@ -338,9 +356,11 @@ class Wiki(object):
             pages[value] = pre.append(page)
         return pages
 
+
     def get_by_title(self, title):
         pages = self.index(attr='title')
         return pages.get(title)
+
 
     def get_tags(self):
         pages = self.index()
@@ -357,6 +377,7 @@ class Wiki(object):
                     tags[tag] = [page]
         return tags
 
+
     def index_by_tag(self, tag):
         pages = self.index()
         tagged = []
@@ -364,6 +385,7 @@ class Wiki(object):
             if tag in page.tags:
                 tagged.append(page)
         return sorted(tagged, key=lambda x: x.title.lower())
+
 
     def search(self, term, ignore_case=True, attrs=['title', 'tags', 'body']):
         pages = self.index()

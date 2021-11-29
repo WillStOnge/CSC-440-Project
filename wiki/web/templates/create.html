@@ -2,13 +2,22 @@
 
 {% block title %}Create a new page{% endblock title %}
 {% block content %}
-<form method="POST" class="form-inline">
-	{{ form.hidden_tag() }}
-	{{ input(form.url, placeholder="URL of the new page", autocomplete="off") }}
-	<input type="submit" class="btn btn-success" value="Create">
-</form>
+{% if not session['user_is_guest'] %}
+    <form method="POST" class="form-inline">
+        {{ form.hidden_tag() }}
+        {{ input(form.url, placeholder="URL of the new page", autocomplete="off") }}
+        <input type="submit" class="btn btn-success" value="Create">
+    </form>
+{% else %}
+<p class="alert alert-success">"You are not authorized!"</p>
+<p>As a guest you may view our pages. Please contact our system administrator if you want to request create page access.</p>
+{% endif %}
 {% endblock content %}
 
+
 {% block sidebar %}
-<p class="alert alert-success">Thank you for creating new content!</p>
+{% if not session['user_is_guest'] %}
+    <a href="{{ url_for('wiki.upload') }}" target="_blank">Upload a file</a>
+{% endif %}
 {% endblock sidebar %}
+

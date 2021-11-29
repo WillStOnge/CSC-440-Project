@@ -1,34 +1,47 @@
-"""
-    Routes
-    ~~~~~~
-"""
-from flask import Blueprint, current_app
-from flask import flash
-from flask import redirect
-from flask import render_template
-from flask import request
-from flask import url_for
-from flask_login import current_user
-from flask_login import login_required
-from flask_login import login_user
-from flask_login import logout_user
+from flask import Blueprint, flash, redirect, render_template, request, url_for, session, jsonify, current_app
+from flask_login import current_user, login_required, login_user, logout_user
+from werkzeug.utils import secure_filename
+from functools import wraps
+import os
 
-from wiki.core import Processor
-from wiki.web.forms import EditorForm, UserForm
-from wiki.web.forms import LoginForm
-from wiki.web.forms import SearchForm
-from wiki.web.forms import URLForm
-from wiki.web import current_wiki
-from wiki.web import current_users
+from wiki.web.forms import EditorForm, UserForm, RoleForm, LoginForm, SearchForm, URLForm
+from wiki.web.controller import RoleAssignmentManager, RoleManager
+from wiki.web import current_wiki, current_users, Database
 from wiki.web.util import protect
+from wiki.core import Processor
+
 
 bp = Blueprint('wiki', __name__)
+
+
+def requires_access_level(role_name):
+    def decorator(f):
+        @wraps(f)
+        def decorated_function(*args, **kwargs):
+            if not current_user.is_authenticated:
+                return redirect(url_for('wiki.login'))
+            current_user_roles = RoleAssignmentManager(Database()).get_user_roles(current_user)
+            matching_role = next((role_object for role_object in current_user_roles if role_object.role_name == role_name), None)
+            if matching_role is None:
+                flash("You do not have access to that page.", 'error')
+                return redirect(url_for('wiki.home'))
+            return f(*args, **kwargs)
+        return decorated_function
+    return decorator
 
 
 @bp.route('/')
 @protect
 def home():
     page = current_wiki.get('home')
+    user_roles = RoleAssignmentManager(Database()).get_user_roles(current_user)
+    user_admin_role = next((role_object for role_object in user_roles if role_object.role_name == "admin"), None)
+    user_guest_role = next((role_object for role_object in user_roles if role_object.role_name == "guest"), None)
+
+    if user_admin_role is not None:
+        session['user_is_admin'] = True
+    if user_guest_role is not None:
+        session['user_is_guest'] = True
     if page:
         return display('home')
     return render_template('home.html')
@@ -87,9 +100,9 @@ def move(url):
     page = current_wiki.get_or_404(url)
     form = URLForm(obj=page)
     if form.validate_on_submit():
-        newurl = form.url.data
-        current_wiki.move(url, newurl)
-        return redirect(url_for('wiki.display', url=newurl))
+        new_url = form.url.data
+        current_wiki.move(url, new_url)
+        return redirect(url_for('wiki.display', url=new_url))
     return render_template('move.html', form=form, page=page)
 
 
@@ -135,7 +148,7 @@ def user_login():
         login_user(user)
         user.set_authenticated(True)
         flash('Login successful.', 'success')
-        return redirect(request.args.get("next") or url_for('wiki.index'))
+        return redirect(request.args.get("next") or url_for('wiki.home'))
     return render_template('login.html', form=form)
 
 
@@ -145,7 +158,7 @@ def user_logout():
     current_user.set_authenticated(False)
     logout_user()
     flash('Logout successful.', 'success')
-    return redirect(url_for('wiki.index'))
+    return redirect(url_for('wiki.home'))
 
 
 @bp.route('/user/')
@@ -157,6 +170,7 @@ def user_index():
 
 @bp.route('/user/create/', methods=['POST', 'GET'])
 @protect
+@requires_access_level('admin')
 def user_create():
     form = UserForm()
     if form.validate_on_submit():
@@ -172,7 +186,12 @@ def user_create():
 @protect
 def user_admin(user_name):
     user = current_users.read_name(user_name)
-    return render_template('user.html', user=user)
+    all_roles = RoleManager(Database()).read_all()
+    user_roles = RoleAssignmentManager(Database()).get_user_roles(user)
+    roles_to_assign = set(all_roles).difference(user_roles)
+    if len(roles_to_assign) == 0:
+        roles_to_assign = None
+    return render_template('user.html', user=user, user_roles=user_roles, roles_to_assign=roles_to_assign)
 
 
 @bp.route('/user/delete/<int:user_id>/')
@@ -186,41 +205,102 @@ def user_delete(user_id):
     return 'Could not delete user'
 
 
+@bp.route('/roles')
+@protect
+@requires_access_level('admin')
+def roles():
+    role_manager = RoleManager(Database())
+    all_roles = role_manager.read_all()
+    role_form = RoleForm()
+    return render_template('roles.html', roles=all_roles, role_form=role_form)
 
-@bp.route('/roles/')
-def role_list():
-    pass
 
-
-@bp.route('/roles/<int:user_id>/')
-def role_list_assigned(user_id):
-    pass
-
-
-@bp.route('/role/create/')
+@bp.route('/roles/create/', methods=['POST'])
+@requires_access_level('admin')
 def role_create():
-    pass
+    role_name = request.form['name']
+    role_manager = RoleManager(Database())
+    user_role = role_manager.create(role_name)
+    if user_role is None:
+        flash('Could not create role: "%s"' % role_name, 'error')
+    return redirect(url_for('wiki.roles'))
 
 
-@bp.route('/role/delete/<string:role_name>/')
+@bp.route('/roles/delete/<string:role_name>/')
+@requires_access_level('admin')
 def role_delete(role_name):
-    pass
+    role_manager = RoleManager(Database())
+    role_to_be_deleted = role_manager.read(role_name)
+    deleted = role_manager.delete(role_to_be_deleted)
+    if not deleted:
+        flash('Could not delete role: "%s"' % role_name, 'error')
+    if deleted:
+        flash('Role: "%s" has been removed' % role_name, 'success')
+    return redirect(url_for('wiki.roles'))
 
 
 @bp.route('/role/assign/<int:user_id>/<string:role_name>/')
+@requires_access_level('admin')
 def role_assign(user_id, role_name):
-    pass
+    role_manager = RoleManager(Database())
+    role = role_manager.read(role_name)
+    if role is None:
+        return 'Could not find role: "%s" ' % role_name
+
+    role_assignment_manager = RoleAssignmentManager(Database())
+    user = current_users.read_id(user_id)
+    user_roles = role_assignment_manager.get_user_roles(user)
+
+    # Given a role name, checks if user has a role with that role name
+    # returns None if role is not found
+    existing_user_role = next((role_object for role_object in user_roles if role_object.role_name == role_name), None)
+
+    if existing_user_role is not None:
+        flash('User "%s" already has role: "%s"' % (user.user_name, role.role_name), 'warning')
+        return redirect(url_for('wiki.user_admin', user_name=user.user_name))
+
+    assigned_role = role_assignment_manager.assign_role_to_user(user, role)
+    if assigned_role is not None:
+        flash('Role "%s" was assigned to user "%s"' % (role.role_name, user.user_name), 'success')
+        return redirect(url_for('wiki.user_admin', user_name=user.user_name))
+    return 'Could not assign role: "%s" to user id: "%s"' % (role_name, user_id)
 
 
 @bp.route('/role/unassign/<int:user_id>/<string:role_name>/')
+@requires_access_level('admin')
 def role_unassign(user_id, role_name):
-    pass
+    user = current_users.read_id(user_id)
+    user_roles = RoleAssignmentManager(Database()).get_user_roles(user)
+
+    # Given a role name, checks if user has a role with that role name
+    # returns None if role is not found
+    role = next((role_object for role_object in user_roles if role_object.role_name == role_name), None)
+
+    if role is not None:
+        role_unassigned = RoleAssignmentManager(Database()).unassign_role_to_user(user, role)
+        if current_user.user_id == user_id and role.role_name == 'admin':
+            session['user_is_admin'] = False
+            return redirect(url_for('wiki.home', user_name=user.user_name))
+        if role_unassigned:
+            flash('Role "%s" was unassigned from user "%s"' % (role.role_name, user.user_name), 'success')
+        elif not role_unassigned:
+            flash('Could not assign role: "%s" to user: "%s"' % (role_name, user.user_name), 'error')
+    elif role is None:
+        flash('Could not find role: "%s" from user: "%s"' % (role_name, user.user_name), 'error')
+    return redirect(url_for('wiki.user_admin', user_name=user.user_name))
 
 
-"""
-    Error Handlers
-    ~~~~~~~~~~~~~~
-"""
+@bp.route("/upload")
+def upload():
+    return render_template("upload.html")
+
+
+@bp.route("/uploading", methods=["POST", "GET"])
+def uploading():
+    file = request.files['file']
+    if file:
+        file.save(os.path.join(current_app.config['UPLOAD_DIR'], secure_filename(file.filename)))
+    return ""
 
 
 @bp.errorhandler(404)

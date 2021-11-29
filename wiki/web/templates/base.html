@@ -2,9 +2,12 @@
 <!DOCTYPE html>
 <html>
 	<head>
+        <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='main.css') }}">
 		<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='bootstrap.css') }}">
 		<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='responsive.css') }}">
 		<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='pygments.css') }}">
+		<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='dropzone.min.css') }}">
+		<title>{{ config.TITLE }}</title>
 	</head>
 
 	<body>
@@ -18,17 +21,36 @@
 								<li><a href="{{ url_for('wiki.home') }}">Home</a></li>
 								<li><a href="{{ url_for('wiki.index') }}">Index</a></li>
 								<li><a href="{{ url_for('wiki.tags') }}">Tags</a></li>
-								<li><a href="{{ url_for('wiki.user_index') }}">Users</a></li>
+
+
 								<li><a href="{{ url_for('wiki.search') }}">Search</a></li>
-								<li class="divider-vertical"></li>
-								<li><a href="{{ url_for('wiki.create') }}">New Page</a></li>
-								<li class="divider-vertical"></li>
+
+                                {% if not session['user_is_guest'] %}
+                                    <li class="divider-vertical"></li>
+                                    <li><a href="{{ url_for('wiki.create') }}">New Page</a></li>
+                                    <li class="divider-vertical"></li>
+                                {% endif %}
+
+                                {% if session['user_is_admin'] %}
+                                    <li class="divider-vertical"></li>
+                                    <li><a href="{{ url_for('wiki.user_index') }}">Users</a></li>
+                                    <li><a href="{{ url_for('wiki.roles') }}">Roles</a></li>
+                                    <li class="divider-vertical"></li>
+                                {% endif %}
 								<li></li>
 							</ul>
 
-							<ul class="nav pull-right">
+                            <ul class="nav pull-right">
 								{% if current_user.is_authenticated %}
-									<li><a href="{{ url_for('wiki.user_logout') }}">Logout</a></li>
+                                    <li class="nav-item dropdown">
+                                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                          Welcome, {{ current_user.user_name }}
+                                        </a>
+                                        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                          <a class="dropdown-item" href="{{ url_for('wiki.user_admin', user_name=current_user.user_name) }}">View Profile</a>
+                                          <a class="dropdown-item" href="{{ url_for('wiki.user_logout') }}">Logout</a>
+                                        </div>
+                                    </li>
 								{% else %}
 									<li><a href="{{ url_for('wiki.user_login') }}">Login</a></li>
 								{% endif %}
@@ -62,7 +84,7 @@
 						{% endif %}
 					{% endwith %}
 					{% if form and form.errors %}
-						<div class="alert alert-error">Errors occured verifying your input. Please check the marked fields below.</div>
+						<div class="alert alert-error">Errors occurred verifying your input. Please check the marked fields below.</div>
 					{% endif %}
 					{% block content %}
 					{% endblock content %}
@@ -80,6 +102,7 @@
 			}
 		</script>
 		<script src="{{ url_for('static', filename='bootstrap.min.js') }}"></script>
+		<script src="{{ url_for('static', filename='dropzone.min.js') }}"></script>
 		<script type="text/javascript">
 			{% block postscripts %}
 			{% endblock postscripts %}

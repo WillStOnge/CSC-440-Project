@@ -4,21 +4,77 @@
 
 {% block content %}
 {% if user %}
-	<table class="table">
-		<thead>
-			<tr>
-				<th>ID</th>
-				<th>Name</th>
-			</tr>
-		</thead>
-		<tbody>
+    {% if session['user_is_admin'] %}
+        <table class="table">
+
+            <thead>
             <tr>
-                <td>{{ user.user_id }}</td>
-                <td>{{ user.user_name }}</td>
+                <th>ID</th>
+                <th>Name</th>
             </tr>
-		</tbody>
-	</table>
-   {% else %}
-	<p>User does not exist.</p>
+            </thead>
+
+            <tbody>
+                    <tr>
+                        <td>{{ user.user_id }}</td>
+                        <td>{{ user.user_name }}</td>
+                    </tr>
+            </tbody>
+        </table>
+        <p>
+                <a href="{{ url_for('wiki.user_index') }}" class="btn btn-primary">See all Users</a>
+                <a href="{{ url_for('wiki.user_delete', user_id=user.user_id) }}" class="btn btn-danger">Delete</a>
+        </p>
+    {% else %}
+    <p>The page you are trying to access is not accessible.</p>
+    {% endif %}
+{% else %}
+<p>User does not exist.</p>
 {% endif %}
 {% endblock content %}
+
+{% block sidebar %}
+{% if user and session['user_is_admin'] %}
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Roles</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            {% if user_roles is not none %}
+                {% for role in user_roles %}
+                    <tr>
+                        <td>{{ role.role_name }}</td>
+                        <td><a href="{{ url_for('wiki.role_unassign', user_id=user.user_id, role_name=role.role_name) }}" class="btn btn-mini btn-danger">Remove</a></td>
+                    </tr>
+                {% endfor %}
+            {% else %}
+                NONE
+            {% endif %}
+
+            {% if roles_to_assign %}
+                <tr>
+                    <td>
+                        <select style="width: 50%" id="roles" name="roles">
+                        {% for role in roles_to_assign %}
+                            <option value="{{ role.role_name }}">{{ role.role_name }}</option>
+                        {% endfor %}
+                        </select>
+                    </td>
+                    <td>
+                        <button id="assign_role" class="btn btn-mini btn-success">Add</button>
+                    </td>
+                </tr>
+            {% endif %}
+        </tbody>
+    </table>
+{% endif %}
+{% endblock sidebar %}
+
+{% block postscripts %}
+$("#assign_role").click(function() {
+    window.location = "/role/assign/{{ user.user_id }}/" + $('#roles').find(":selected").text();
+});
+{% endblock postscripts %}
