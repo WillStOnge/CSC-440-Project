@@ -3,7 +3,7 @@
 {% block title %}Roles{% endblock title %}
 
 {% block content %}
-{% if session['user_is_guest'] %}
+{% if session['user_is_admin'] %}
 	<table class="table">
         <thead>
            <tr>
