@@ -1,6 +1,9 @@
 from collections import OrderedDict
+from bs4 import BeautifulSoup
 from flask import abort, url_for
 import os, re, markdown
+
+UPLOADS_PATH = '../static/upload/'
 
 
 def clean_url(url):
@@ -116,6 +119,26 @@ class Processor(object):
         self.meta_raw, self.markdown = self.pre.split('\n\n', 1)
 
 
+    @staticmethod
+    def process_img_tags(html):
+        """
+            Gets img tags from HTML and modifies each img src to point to the
+            static uploads directory using BeautifulSoup. Beautiful Soup is a
+            HTML parser that allows to easily pick out and adjust elements from
+            HTML.
+
+            :param str html: The markdown processed as html.
+
+            :returns: The processed html with the modified img tags.
+            :rtype: str
+        """
+        soup = BeautifulSoup(html)
+        for img in soup.findAll('img'):
+            img['src'] = UPLOADS_PATH + img['src']
+        processed_html = str(soup)
+        return processed_html
+
+
     def process_meta(self):
         """
             Get metadata.
@@ -149,13 +172,17 @@ class Processor(object):
         """
             Runs the full suite of processing on the given text, all
             pre and post processing, markdown rendering and meta data
-            handling.
+            handling. Also detects html image tags created from markdown
+            and appropriately adjusts the image source path to point to
+            the correct image file.
         """
         self.process_pre()
         self.process_markdown()
         self.split_raw()
         self.process_meta()
         self.process_post()
+
+        self.final = self.process_img_tags(self.final)
 
         return self.final, self.markdown, self.meta
 
