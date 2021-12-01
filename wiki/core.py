@@ -122,7 +122,10 @@ class Processor(object):
     @staticmethod
     def process_img_tags(html):
         """
-            Gets img tags from HTML and modifies each img src to point to the static uploads directory.
+            Gets img tags from HTML and modifies each img src to point to the
+            static uploads directory using BeautifulSoup. Beautiful Soup is a
+            HTML parser that allows to easily pick out and adjust elements from
+            HTML.
 
             :param str html: The markdown processed as html.
 
@@ -132,7 +135,8 @@ class Processor(object):
         soup = BeautifulSoup(html)
         for img in soup.findAll('img'):
             img['src'] = UPLOADS_PATH + img['src']
-        return str(soup)
+        processed_html = str(soup)
+        return processed_html
 
 
     def process_meta(self):
@@ -161,20 +165,24 @@ class Processor(object):
         current = self.html
         for processor in self.postprocessors:
             current = processor(current)
-        self.final = self.process_img_tags(current)
+        self.final = current
 
 
     def process(self):
         """
             Runs the full suite of processing on the given text, all
             pre and post processing, markdown rendering and meta data
-            handling.
+            handling. Also detects html image tags created from markdown
+            and appropriately adjusts the image source path to point to
+            the correct image file.
         """
         self.process_pre()
         self.process_markdown()
         self.split_raw()
         self.process_meta()
         self.process_post()
+
+        self.final = self.process_img_tags(self.final)
 
         return self.final, self.markdown, self.meta
 
