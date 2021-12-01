@@ -20,7 +20,8 @@ $(document).ready(function() {
         width: 300,
         height: 300,
         progressBarWidth: '100%',
-        maxFilesize: '{{ config.FILE_SIZE_MAX_MB }} MB'
+        acceptedFiles: ".jpeg,.jpg,.png,.gif",
+        maxFilesize: '{{ config.FILE_SIZE_MAX_MB }}'
     })
 });
 {% endblock postscripts %}
