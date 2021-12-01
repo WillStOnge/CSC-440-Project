@@ -1,6 +1,9 @@
 from collections import OrderedDict
+from bs4 import BeautifulSoup
 from flask import abort, url_for
 import os, re, markdown
+
+UPLOADS_PATH = '../static/upload/'
 
 
 def clean_url(url):
@@ -116,6 +119,17 @@ class Processor(object):
         self.meta_raw, self.markdown = self.pre.split('\n\n', 1)
 
 
+    @staticmethod
+    def process_img_tags(html):
+        """
+            Gets img tags from HTML and modifies each img src to point to the static uploads directory.
+        """
+        soup = BeautifulSoup(html)
+        for img in soup.findAll('img'):
+            img['src'] = UPLOADS_PATH + img['src']
+        return str(soup)
+
+
     def process_meta(self):
         """
             Get metadata.
@@ -142,7 +156,7 @@ class Processor(object):
         current = self.html
         for processor in self.postprocessors:
             current = processor(current)
-        self.final = current
+        self.final = self.process_img_tags(current)
 
 
     def process(self):
