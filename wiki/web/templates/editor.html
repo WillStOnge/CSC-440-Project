@@ -14,7 +14,7 @@ Wiki Editor
 		<form method="post" class="form">
 			{{ form.hidden_tag() }}
 			{{ input(form.title, placeholder="Title", class="span7", autocomplete="off") }}
-			{{ input(form.body, placeholder="Markdown", class="span7", rows="20") }}
+			{{ input(form.body, placeholder="Markdown", class="span7", rows="30") }}
 			{{ input(form.tags, placeholder="Tags (comma separated)", class="span7", autocomplete="off") }}
 			<div class="form-actions">
         <div class="pull-left">
@@ -51,12 +51,14 @@ Turns into:
 <pre><code># Level 1
 ## Level 2
 ### Level 3</code></pre>
+<p>Include your uploaded image files using the following markdown:</p>
+<pre><code>![image label](image.png)</code></pre>
 <p></p>
 <br/>
 <h4 style="display:inline;">Images</h4><i style="font-size:.8em">&emsp;&emsp;Click image to enlarge</i>
 <ul style="height: 180px; overflow:hidden; overflow-y:scroll;">
 {%- for item in list.files %}
-    <li><a href="{{ url_for('static', filename='Uploads/' + item.name) }}" target="_blank"><img src="{{ url_for('static', filename='Uploads/' + item.name) }}" alt="{{ item.name }}" style="max-height:80px; max-width:80px;"></a> {{ item.name }}</li><li style="height:5px"></li>
+    <li><a href="{{ url_for('static', filename='upload/' + item.name) }}" target="_blank"><img src="{{ url_for('static', filename='upload/' + item.name) }}" alt="{{ item.name }}" style="max-height:80px; max-width:80px;"></a> {{ item.name }}</li><li style="height:5px"></li>
 {%- endfor %}
 </ul>
 <a href="{{ url_for('wiki.upload') }}" target="_blank">Upload a new image</a>

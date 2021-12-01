@@ -43,6 +43,7 @@ def create_app(directory):
         app.config.from_pyfile(
             os.path.join(app.config.get('CONTENT_DIR'), 'config.py')
         )
+        app.static_url_path = app.config.get('UPLOAD_DIR')
     except IOError:
         msg = "You need to place a config.py in your content directory."
         raise WikiError(msg)

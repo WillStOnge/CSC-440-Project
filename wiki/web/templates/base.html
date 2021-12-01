@@ -21,18 +21,15 @@
 								<li><a href="{{ url_for('wiki.home') }}">Home</a></li>
 								<li><a href="{{ url_for('wiki.index') }}">Index</a></li>
 								<li><a href="{{ url_for('wiki.tags') }}">Tags</a></li>
-
-
 								<li><a href="{{ url_for('wiki.search') }}">Search</a></li>
+                                <li class="divider-vertical"></li>
 
                                 {% if not session['user_is_guest'] %}
-                                    <li class="divider-vertical"></li>
                                     <li><a href="{{ url_for('wiki.create') }}">New Page</a></li>
                                     <li class="divider-vertical"></li>
                                 {% endif %}
 
                                 {% if session['user_is_admin'] %}
-                                    <li class="divider-vertical"></li>
                                     <li><a href="{{ url_for('wiki.user_index') }}">Users</a></li>
                                     <li><a href="{{ url_for('wiki.roles') }}">Roles</a></li>
                                     <li class="divider-vertical"></li>

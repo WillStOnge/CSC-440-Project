@@ -272,6 +272,10 @@ def role_assign(user_id, role_name):
 
     assigned_role = role_assignment_manager.assign_role_to_user(user, role)
     if assigned_role is not None:
+        if current_user.user_id == user_id and role.role_name == 'guest':
+            session['user_is_guest'] = True
+        if current_user.user_id == user_id and role.role_name == 'admin':
+            session['user_is_admin'] = True
         flash('Role "%s" was assigned to user "%s"' % (role.role_name, user.user_name), 'success')
         return redirect(url_for('wiki.user_admin', user_name=user.user_name))
     return 'Could not assign role: "%s" to user id: "%s"' % (role_name, user_id)
@@ -291,7 +295,8 @@ def role_unassign(user_id, role_name):
         role_unassigned = RoleAssignmentManager(Database()).unassign_role_to_user(user, role)
         if current_user.user_id == user_id and role.role_name == 'admin':
             session['user_is_admin'] = False
-            return redirect(url_for('wiki.home', user_name=user.user_name))
+        if current_user.user_id == user_id and role.role_name == 'guest':
+            session['user_is_guest'] = False
         if role_unassigned:
             flash('Role "%s" was unassigned from user "%s"' % (role.role_name, user.user_name), 'success')
         elif not role_unassigned:
