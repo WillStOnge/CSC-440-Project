@@ -2,5 +2,4 @@ title: Main
 tags: interesting
 
 World
-[[hello|abc]] [[world|world]]  
-![image](test.jpg)
+[[hello|abc]] [[world|world]]

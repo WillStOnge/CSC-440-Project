@@ -123,6 +123,11 @@ class Processor(object):
     def process_img_tags(html):
         """
             Gets img tags from HTML and modifies each img src to point to the static uploads directory.
+
+            :param str html: The markdown processed as html.
+
+            :returns: The processed html with the modified img tags.
+            :rtype: str
         """
         soup = BeautifulSoup(html)
         for img in soup.findAll('img'):

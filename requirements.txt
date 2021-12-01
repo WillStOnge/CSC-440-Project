@@ -1,5 +1,7 @@
 alembic==1.1.0
 aniso8601==8.0.0
+beautifulsoup4~=4.10.0
+bs4~=0.0.1
 Click==7.0
 dominate==2.4.0
 Faker==0.9.1
