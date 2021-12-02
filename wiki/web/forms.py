@@ -9,11 +9,9 @@ from wiki.core import clean_url
 class URLForm(FlaskForm):
     url = TextField('', [InputRequired()])
 
-
     def validate_url(form, field):
         if current_wiki.exists(field.data):
             raise ValidationError('The URL "%s" exists already.' % field.data)
-
 
     def clean_url(self, url):
         return clean_url(url)
@@ -37,16 +35,14 @@ class LoginForm(FlaskForm):
     name = TextField('', [InputRequired()])
     password = PasswordField('', [InputRequired()])
 
-
     def validate_name(form, field):
         user = current_users.read_name(field.data)
         if user == None:
             raise ValidationError('This username does not exist.')
 
-
     def validate_password(form, field):
         user = current_users.read_name(form.name.data)
-        if user == None:
+        if user is None:
             raise ValidationError('This username does not exist.')
         if not user.check_password(field.data):
             raise ValidationError('Username and password do not match.')

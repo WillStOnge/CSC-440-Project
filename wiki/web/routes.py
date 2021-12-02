@@ -1,4 +1,4 @@
-from flask import Blueprint, flash, redirect, render_template, request, url_for, session, jsonify, current_app
+from flask import Blueprint, flash, redirect, render_template, request, url_for, session, current_app
 from flask_login import current_user, login_required, login_user, logout_user
 from werkzeug.utils import secure_filename
 from functools import wraps
@@ -11,7 +11,6 @@ from wiki.web import current_wiki, current_users, Database
 from wiki.web.util import protect
 from wiki.core import Processor
 
-
 bp = Blueprint('wiki', __name__)
 
 
@@ -22,19 +21,24 @@ def requires_access_level(role_name):
             if not current_user.is_authenticated:
                 return redirect(url_for('wiki.login'))
             current_user_roles = RoleAssignmentManager(Database()).get_user_roles(current_user)
-            matching_role = next((role_object for role_object in current_user_roles if role_object.role_name == role_name), None)
+            matching_role = next(
+                (role_object for role_object in current_user_roles if role_object.role_name == role_name), None)
             if matching_role is None:
                 flash("You do not have access to that page.", 'error')
                 return redirect(url_for('wiki.home'))
             return f(*args, **kwargs)
+
         return decorated_function
+
     return decorator
 
 
 def get_list(path):
     file_dict = dict(name=path, files=[])
-    try: file_list = os.listdir(path)
-    except OSError: pass
+    try:
+        file_list = os.listdir(path)
+    except OSError:
+        pass
     else:
         for filename in file_list:
             if not os.path.isdir(os.path.join(path, filename)):
@@ -95,6 +99,7 @@ def edit(url):
         flash('"%s" was saved.' % page.title, 'success')
         return redirect(url_for('wiki.display', url=url))
     return render_template('editor.html', form=form, page=page, dir=config.UPLOAD_DIR, list=get_list(config.UPLOAD_DIR))
+
 
 @bp.route('/preview/', methods=['POST'])
 @protect
@@ -234,6 +239,7 @@ def role_create():
     user_role = role_manager.create(role_name)
     if user_role is None:
         flash('Could not create role: "%s"' % role_name, 'error')
+    flash('A new role: "%s" has been created' % role_name, 'success')
     return redirect(url_for('wiki.roles'))
 
 

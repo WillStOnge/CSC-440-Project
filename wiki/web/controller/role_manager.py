@@ -6,9 +6,9 @@ class RoleManager:
     """
     Class used to manage roles in the database.
     """
+
     def __init__(self, database: Database):
         self._database = database
-
 
     def create(self, role_name: str) -> Role:
         """
@@ -20,17 +20,16 @@ class RoleManager:
         """
         # Check if role already exists.
         select_query = "SELECT role_id FROM role WHERE role_name = '{}';".format(role_name)
-        if self._database.execute_query_for_result(select_query) is not None:
+        if len(self._database.execute_query_for_result(select_query)) != 0:
             return None
 
         # Insert the role.
         insert_query = "INSERT INTO role (role_name) VALUES ('{}');".format(role_name)
-        if not self._database.execute_query(insert_query):
+        if self._database.execute_query(insert_query) is False:
             return None
 
         # Return instance of new role.
         return self.read(role_name)
-
 
     def read(self, role_name: str) -> Role:
         """
@@ -48,7 +47,6 @@ class RoleManager:
         else:
             return None
 
-
     def read_all(self) -> list[Role]:
         """
         Reads all role's data from the database an returns it.
@@ -63,7 +61,6 @@ class RoleManager:
         else:
             return None
 
-
     def update(self, role: Role) -> bool:
         """
         Updates a role in the database.
@@ -76,7 +73,6 @@ class RoleManager:
                 SET role_name = '{}' \
                 WHERE role_id = {}".format(role.role_name, role.role_id)
         return self._database.execute_query(query)
-
 
     def delete(self, role: Role) -> bool:
         """
@@ -96,7 +92,6 @@ class RoleAssignmentManager:
 
     def __init__(self, database):
         self._database = database
-
 
     def assign_role_to_user(self, user: User, role: Role) -> bool:
         """
@@ -127,7 +122,6 @@ class RoleAssignmentManager:
                                                                                                 role.role_id)
         return self._database.execute_query(insert_query)
 
-
     def unassign_role_to_user(self, user: User, role: Role) -> bool:
         """
         Unassigns a role from a user.
@@ -139,7 +133,6 @@ class RoleAssignmentManager:
         """
         return self._database.execute_query("DELETE FROM role_assignment WHERE role_id = {} AND user_id = {}".format(
             role.role_id, user.user_id))
-
 
     def get_user_roles(self, user: User) -> list[Role]:
         """

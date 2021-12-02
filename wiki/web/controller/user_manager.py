@@ -6,10 +6,10 @@ class UserManager:
     """
     Class used to manage users in the database.
     """
+
     def __init__(self, database: Database):
         self._database = database
 
-        
     def create(self, user_name: str, password: str, is_active: int) -> User:
         """
         Inserts a new user into the database.
@@ -36,7 +36,6 @@ class UserManager:
         # Return instance of new user.
         return self.read_name(user_name)
 
-    
     def read_name(self, user_name: str) -> User:
         """
         Reads user's data from the database an returns it.
@@ -53,7 +52,6 @@ class UserManager:
         else:
             return None
 
-        
     def read_id(self, user_id: int) -> User:
         query = "SELECT user_id, user_name, password, is_active FROM user WHERE user_id = '{}';".format(user_id)
         result = self._database.execute_query_for_result(query)
@@ -63,7 +61,6 @@ class UserManager:
         else:
             return None
 
-        
     def read_all(self) -> list[User]:
         """
         Reads all user's data from the database an returns it.
@@ -78,7 +75,6 @@ class UserManager:
         else:
             return None
 
-        
     def update(self, user: User) -> bool:
         """
         Updates a user in the database.
@@ -92,7 +88,6 @@ class UserManager:
                 WHERE user_id = {}".format(user.user_name, user.password, user.is_active, user.user_id)
         return self._database.execute_query(query)
 
-    
     def delete(self, user: User) -> bool:
         """
         Deletes a user from the database.

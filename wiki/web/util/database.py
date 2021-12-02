@@ -2,13 +2,13 @@ from flask import current_app
 from .singleton import Singleton
 import pyodbc
 
+
 class Database(Singleton):
     def __init__(self):
         """
         Initializes an instance of the Database with a connection to the database.
         """
         self._conn = pyodbc.connect(current_app.config['CONNECTION_STRING'])
-
 
     def execute_query_for_result(self, query) -> list:
         """
@@ -28,7 +28,6 @@ class Database(Singleton):
         except:
             return None
 
-    
     def execute_query(self, query) -> bool:
         """
         Executes a query where no result is expected (INSERT, UPDATE, and DELETE statements).
